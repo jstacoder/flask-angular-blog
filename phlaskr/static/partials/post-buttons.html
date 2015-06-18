@@ -1,0 +1,10 @@
+<div class=button-group>
+    <a class="btn btn-success" href="/post/add">Add Post</a>
+    <a class="btn btn-warning" href="/posts">List Posts</a>
+    <a
+       ng-if="ctrl.post&&ctrl.post.id"
+       class="btn btn-danger"
+       ng-click="ctrl.deletePost(ctrl.post)"
+    >Delete Post</a>
+    <a class="btn btn-info" href="/">Home</a>
+</div>

@@ -1,0 +1,26 @@
+<html ng-app="app">
+    <head>
+        <base href="/" />
+        <link rel="stylesheet" href="/static/vendor/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="/static/vendor/bootstrap/dist/css/bootstrap-theme.css" />
+    </head>
+    <body>
+        <nav-bar></nav-bar>
+        <div class=container>
+            <div class=row>
+                <ng-view>
+                </ng-view>
+                <div ng-include='"/static/partials/footer.html"'></div>
+            </div>
+        </div>
+        <script src="/static/vendor/angular/angular.js"></script>
+        <script src="/static/vendor/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
+        <script src="/static/vendor/angular-resource/angular-resource.js"></script>
+        <script src="/static/vendor/angular-route/angular-route.js"></script>
+        <script src="/static/js/controllers.js"></script>
+        <script src="/static/js/directives.js"></script>
+        <script src="/static/js/routes.js"></script>
+        <script src="/static/js/services.js"></script>
+        <script src="/static/js/app.js"></script>
+    </body>
+</html>

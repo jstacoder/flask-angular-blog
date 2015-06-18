@@ -1,0 +1,26 @@
+{
+  "name": "phlaskr",
+  "version": "0.0.0",
+  "authors": [
+    "kyle roux <kyle@level2designs.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.1",
+    "angular-resource": "~1.4.1",
+    "angular-route": "~1.4.1",
+    "bootstrap": "~3.3.5",
+    "angular-ui-bootstrap": "~0.13.0"
+  }
+}

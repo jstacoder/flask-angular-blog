@@ -1,0 +1,57 @@
+<style>
+    .data1 {
+        width:2%;
+    }
+</style>
+<div class="col-md-offset-1 col-md-5">
+    <form name="newPostForm" class=form>
+        <div class=form-group>
+            <label class=control-label>Title</label>
+            <input type=text ng-model=ctrl.newpost.title name=title class=form-control />
+        </div>
+        <div class=form-group>
+            <label class=control-label>Content</label>
+            <textarea ng-model=ctrl.newpost.content name=content cols=18 rows=10 class=form-control>
+            </textarea>
+        </div>
+        <button class="btn btn-default" ng-click=ctrl.onClick()>Submit</button>
+    </form>
+</div>
+<div class="col-md-offset-1 col-md-4">
+    <div class="well">
+        <div class="panel panel-default">
+            <table class="table-hover table-condensed table table-bordered">
+                <thead>
+                    <tr>
+                        <th span=2>Related Posts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="post in ctrl.posts">
+                        <td class="data1">{{ $index + 1 }}</td>
+                        <td><a ng-href="/post/{{ post.id }}">{{ post.title }}</a></td>
+                        <td><input type="checkbox" class="checkbox" ng-model=post.related /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <form class=form-horizontal name=addTagForm>
+        <div class=row>
+            <div class="col-md-4 form-group">
+                <button class="btn btn-default" ng-click="ctrl.newtag.name!=''&&ctrl.onTagClick()">add</button>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Add Tag</label>
+                <input class=form-control ng-model="ctrl.newtag.name" />
+                <ul class="taglist list-unstyled">
+                    <li
+                        ng-repeat="tag in ctrl.tags"
+                        ng-bind=tag.name
+                        ng-class="{'label label-primary':ctrl.selected(tag)}"
+                        ng-click="ctrl.addToSelected(tag)"
+                </ul>
+            </div>
+        </div>
+    </form>
+</div>
