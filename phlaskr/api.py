@@ -1,14 +1,34 @@
-from flask import Flask,views,jsonify,request,make_response,json
-from models import Post,Tag
+from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort
+from models import Post,Tag,Email,AppUser as User
+from itsdangerous import TimedJSONWebSignatureSerializer as signer
 
 api = Flask(__name__+'api',static_folder='static')
 
 api.config['DATABASE_URI'] = 'sqlite:///test3.db'
+api.config['SECRET_KEY'] = 'xxx'
+
+
+
 
 def json_response(content):
     res = make_response(json.dumps(content))
     res.headers['Content-Type'] = 'application/json'
     return res
+
+
+def load_user(tkn):
+    try:
+        data = g.get('signer').loads(tkn)
+    except:
+        return redirect('/login')
+    return AppUser.get_by_id(data['id'])
+
+
+@api.before_request
+def check_auth():
+    g.signer = signer(api.config['SECRET_KEY'],60*60*24*7)
+    if request.cookies.get('NGAPP_AUTH_TKN'):
+        g.user = load_user(request.cookies.get('NGAPP_AUTH_TKN'))
 
 
 class TagView(views.MethodView):
@@ -69,12 +89,31 @@ class DeletePostView(views.MethodView):
             result[1] = 200
         return jsonify(result[0]),result[1]
 
+
+class LoginView(views.MethodView):
+    def post(self):
+
+        data = json.loads(request.data)
+        email = Email.query.filter_by(address=data.get('email')).first()
+        if email is None:
+            return json_response(['error']),404
+        else:
+            if email.user.check_password(data.get('password')):
+                tkn = g.signer.dumps(email.user.to_json())
+                response = make_response(json.dumps(dict(token=tkn)))
+                response.headers['Content-Type'] = 'application/json'
+                response.set_cookie('NGAPP_AUTH_TKN',tkn,expires=60*60*24)
+                return response
+        return json_response(['error']),404
+
 api.add_url_rule('/post','get_posts',view_func=PostView.as_view('get_posts'))
 api.add_url_rule('/post/<int:post_id>','get_post',view_func=PostView.as_view('get_post'))
 api.add_url_rule('/post/delete/<int:post_id>','delete_post',view_func=DeletePostView.as_view('delete_post'))
 api.add_url_rule('/tag','get_tags',view_func=TagView.as_view('get_tags'))
 api.add_url_rule('/tag/<int:tag_id>','get_tag',view_func=TagView.as_view('get_tag'))
 api.add_url_rule('/tag/add','add_tag',view_func=AddTagView.as_view('add_tag'))
+api.add_url_rule('/login','login',view_func=LoginView.as_view('login'))
+
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0',port=8000,debug=True)

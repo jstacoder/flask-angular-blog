@@ -3,10 +3,32 @@
         <base href="/" />
         <link rel="stylesheet" href="/static/vendor/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="/static/vendor/bootstrap/dist/css/bootstrap-theme.css" />
+        <link rel="stylesheet" href="/static/css/style.css" />
     </head>
     <body>
         <nav-bar></nav-bar>
         <div class=container>
+            <div class=row>
+                {% raw %}
+                  <alert
+                         ng-repeat="alert in alerts"
+                         type="{{alert.type}}"
+                         close="closeAlert($index)"
+                         >{{alert.msg}}
+                  </alert>
+                  <div class="col-md-offset-4 col-md-4">
+                    <alert
+                           type="danger"
+                           collapse="isHidden"
+                           close="isHidden=true">Incorrect Login or Password
+                    </alert>
+                  </div>
+                    {% endraw %}
+                    <button
+                            class="btn btn-xs btn-danger"
+                            ng-click="isHidden=false"
+                    >alert</button>
+            </div>
             <div class=row>
                 <ng-view>
                 </ng-view>
@@ -17,10 +39,13 @@
         <script src="/static/vendor/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
         <script src="/static/vendor/angular-resource/angular-resource.js"></script>
         <script src="/static/vendor/angular-route/angular-route.js"></script>
+        <script src="/static/vendor/angular-cookies/angular-cookies.js"></script>
         <script src="/static/js/controllers.js"></script>
         <script src="/static/js/directives.js"></script>
         <script src="/static/js/routes.js"></script>
         <script src="/static/js/services.js"></script>
+        <script src="/static/js/auth.js"></script>
+        <script src="/static/js/md5.app.js"></script>
         <script src="/static/js/app.js"></script>
     </body>
 </html>

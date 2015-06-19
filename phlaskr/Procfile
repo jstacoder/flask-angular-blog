@@ -1,1 +1,1 @@
-web: python __init__.py
+web: ../venv/bin/python __init__.py

@@ -1,6 +1,7 @@
+import os
 from flask import Flask,render_template,views
 
-front  = Flask(__name__+'front',static_folder='static')
+front  = Flask(__name__+'front',static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)))
 
 front.config.DATABASE_URI = 'sqlite:///test3.db'
 
@@ -29,3 +30,21 @@ front.add_url_rule(
     'post_add',
     view_func = IndexView.as_view('post_add')
 )
+front.add_url_rule(
+    '/login',
+    'login',
+    view_func = IndexView.as_view('login')
+)
+front.add_url_rule(
+    '/logout',
+    'logout',
+    view_func = IndexView.as_view('logout')
+)
+front.add_url_rule(
+    '/register',
+    'register',
+    view_func = IndexView.as_view('register')
+)
+
+if __name__ == "__main__":
+    front.run('0.0.0.0',8000,debug=True)

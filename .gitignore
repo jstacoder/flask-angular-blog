@@ -5,3 +5,4 @@ phlaskr/node_modules/*
 phlaskr/local_settings.py
 *.db
 *egg*
+venv/*

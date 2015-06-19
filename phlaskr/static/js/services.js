@@ -7,9 +7,20 @@ app.service('postService',postService)
    .service('navLinkService',navLinkService)
    .factory('TagService',TagService)
    .factory('tags',tags)
-   .factory('addTag',addTag);
+   .factory('addTag',addTag)
+   .factory('loginError',loginError);
    //.factory('deleteModal',deleteModal);
 
+
+loginError.$inject = ['$rootScope','$timeout'];
+function loginError($rootScope,$timeout){
+    return function(){
+        $rootScope.isHidden = false;
+        $timeout(function(){
+            $rootScope.isHidden = true;
+        },2500);
+    };
+}
 
 addTag.$inject = ['tags','TagService'];
 
@@ -44,10 +55,9 @@ function TagService($resource) {
     );
 }
 
+navLinkService.$inject = ['$route','$location','$parse','$rootScope'];
 
-navLinkService.$inject = ['$route','$location'];
-
-function navLinkService($route,$location){
+function navLinkService($route,$location,$parse,$rootScope){
     var self = this,
         links = [];
     self.addLink = addLink;
@@ -59,12 +69,15 @@ function navLinkService($route,$location){
     }
     self.checkLink = checkLink;
     function checkLink(link) {
-        return link.href === $location.path();
+        return (link.href || link) === $location.path();
     }
     function addLink(linkData){
         if (linkData.href) {
             links.push(linkData);
         }
+    }
+    function getFuncFromScope(scope,name) {
+        return $parse(name)(scope);
     }
     function getLinks() {
         return links;
@@ -73,15 +86,20 @@ function navLinkService($route,$location){
         angular.forEach(
             Object.keys(
                 $route.routes
-            ),function(itm){
+            ).filter(function(itm){
+                if(itm.length===1||itm[itm.length-1]!=='/'){
+                    return true;
+                }
+                return false;
+            }),function(itm){
                 console.log(itm);
                 var key = itm,
                     route = $route.routes[key],
-                    linkData = (route.navOptions && route.navOptions.add) ? {
+                    linkData = route.navOptions && route.navOptions.add ? {
                         href:key,
-                        text:route.navOptions.text
+                        text:route.navOptions.text,
+                        show:route.navOptions.show
                     } : {};
-
                 console.log(route);
                 console.log(linkData);
                 addLink(linkData);
@@ -129,10 +147,10 @@ function addPost(posts) {
 }
 
 
-deletePost.$inject = ['posts','$modal'];
+deletePost.$inject = ['posts','$modal','$location'];
 
-function deletePost(posts,$modal) {
-    return function(post){
+function deletePost(posts,$modal,$location) {
+    return function(post,redirectTo){
         $modal.open({
            templateUrl:"/static/partials/modal.html",
            controller:function($scope){
@@ -144,6 +162,7 @@ function deletePost(posts,$modal) {
                        var idx = posts.indexOf(post);
                        post.$delete({post_id:post.id});
                        posts.splice(idx,1);
+                       redirectTo ? $location.path(redirectTo).replace() : false;
         });
 
 

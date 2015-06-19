@@ -52,6 +52,7 @@ def run_migrations_online():
                 config.get_section(config.config_ini_section),
                 prefix='sqlalchemy.',
                 poolclass=pool.NullPool)
+    engine.echo = True
 
     connection = engine.connect()
     context.configure(

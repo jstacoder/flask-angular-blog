@@ -96,7 +96,7 @@ class UserPasswordHash(DateMixin,BaseModel):
 
     user_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'),nullable=False)
     _hash = sa.Column(sa.Text,nullable=False)
-    
+
     @property
     def hash(self):
         return 'private'
@@ -116,7 +116,7 @@ class UserPasswordHash(DateMixin,BaseModel):
         return checkpw(pw,self._hash)
 
 '''
-    
+
 class Post(BaseModel):
     _env = None
     _context = {}
@@ -127,18 +127,23 @@ class Post(BaseModel):
     date_added = sa.Column(sa.DateTime,default=sa.func.now())
     date_modified = sa.Column(sa.DateTime,default=sa.func.now(),onupdate=sa.func.now())
     tags = sa.orm.relationship('Tag',lazy='dynamic',secondary="posts_tags")
+    comments = sa.orm.relationship('Comment',lazy='dynamic')
 
     def __init__(self,*args,**kwargs):
         if 'content' in kwargs:
             self._content = kwargs.pop('content')
         if 'tags' in kwargs and kwargs.get('tags'):
             print kwargs.get('tags')
-            tags = json.loads(kwargs.pop('tags')) if type(kwargs.get('tags')) == unicode else []
+            tags = kwargs.pop('tags')
+            if type(tags) == unicode:
+                tags = json.loads(tags)
             print tags
             print type(tags)
             for t in tags:
-                tag = Tag.get_by_id(int(t))
-                self.tags.append(tag)
+                if t is not None:
+                    tag = Tag.get_by_id(int(t))
+                if tag:
+                    self.tags.append(tag)
         self._env = Environment()
         self._context = {}
         super(Post,self).__init__(*args,**kwargs)
@@ -166,7 +171,8 @@ class Post(BaseModel):
             content=self.content,
             date_added=self.date_added,
             id=self.id,
-            tags=[x.name for x in self.tags.all()]
+            tags=[x.name for x in self.tags.all()],
+            comments=[x.to_json() for x in self.comments.all()]
         )
 
     def _add_to_ctx(self,key,val):
@@ -183,7 +189,21 @@ class Email(BaseModel):
     )
 
     address = sa.Column(sa.String(255))
-    user_id = sa.Column(sa.Integer,sa.ForeignKey('user_profiles.id'))
+    user_data_id = sa.Column(sa.Integer,sa.ForeignKey('user_profiles.id'))
+    user_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
+
+
+    def to_json(self):
+        return dict(
+            address=self.address,
+            user_id=self.user_id
+        )
+
+
+    @property
+    def user(self):
+        return AppUser.get_by_id(self.user_id)
+
 
 class UserProfile(BaseModel):
 
@@ -192,7 +212,7 @@ class UserProfile(BaseModel):
     age = sa.Column(sa.Integer)
     date_added = sa.Column(sa.DateTime,default=sa.func.now())
     location = sa.Column(sa.String(255))
-    emails = sa.orm.relationship('Email',backref=sa.orm.backref('user'),lazy='dynamic')
+    emails = sa.orm.relationship('Email',backref=sa.orm.backref('user_profile'),lazy='dynamic')
 
     def __repr__(self):
         return (
@@ -205,6 +225,7 @@ class UserProfile(BaseModel):
 
 class AppUser(BaseModel):
 
+    emails = sa.orm.relationship('Email',lazy='dynamic')
     username = sa.Column(sa.String(255),unique=True,nullable=False)
     user_profile_id = sa.Column(sa.Integer,sa.ForeignKey('user_profiles.id'))
     profile = sa.orm.relationship('UserProfile',uselist=False,backref=sa.orm.backref('user'))
@@ -218,6 +239,7 @@ class AppUser(BaseModel):
         if 'password' in kwargs:
             self.pwhash = kwargs.pop('password')
         super(AppUser,self).__init__(*args,**kwargs)
+        self.profile = UserProfile(id=self.id).save()
 
     @property
     def pwhash(self):
@@ -229,6 +251,13 @@ class AppUser(BaseModel):
 
     def check_password(self,pw):
         return checkpw(pw,self._pwhash)
+
+    def to_json(self):
+        return dict(
+            username=self.username,
+            id=self.id,
+            emails=[x.to_json() for x in self.emails.all()]
+        )
 
 
 class Tag(BaseModel):
@@ -244,12 +273,26 @@ class Tag(BaseModel):
 
 class Comment(BaseModel):
 
-    title = sa.Column(sa.String(255))
-    parent_post_id = sa.Column(sa.Integer,sa.ForeignKey('posts.id'))
+    subject = sa.Column(sa.String(255))
+    post_id = sa.Column(sa.Integer,sa.ForeignKey('posts.id'))
     parent_comment_id = sa.Column(sa.Integer,sa.ForeignKey('comments.id'))
 
-    #reply = sa.orm.relationship('Comment',backref='replys',primaryjoin='Comment.parent_comment_id==comments.id')
-    post = sa.orm.relationship('Post',backref=sa.orm.backref('comments',lazy='dynamic'))
+    content = sa.Column(sa.Text)
+    author_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
+    author = sa.orm.relationship('AppUser',backref=sa.orm.backref('comments',lazy='dynamic'))
+
+    replys = sa.orm.relationship('Comment')
+    parent = sa.orm.relationship('Comment',remote_side='Comment.parent_comment_id',uselist=False)
+    post = sa.orm.relationship('Post')
+
+    def to_json(self):
+        return dict(
+            subject=self.subject,
+            post_id=self.post_id,
+            content=self.content,
+            author=self.author and self.author.name or '',
+        )
+
 
 posts_tags =\
     sa.Table(

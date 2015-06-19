@@ -2,11 +2,18 @@
 <h2>Posts:</h2>
 <hr />
 <div ng-repeat="post in ctrl.posts" ng-show="post.title">
-    <h3>{{ post.title }}</h3>
+    <h3 class=lead><a class="unstyle" ng-href="/post/{{ post.id }}">{{ post.title }}</a></h3>
     <h5>Date added: {{ post.date_added | date }}</h5>
-    <p>{{ post.content }}</p>
-    <a class="btn-xs btn btn-success" ng-href="/post/{{ post.id }}">Read</a>
-    <button class="btn-xs btn btn-danger" ng-click="ctrl.deletePost(post)">Delete</button>
+    <div>
+        <span ng-repeat="tag in post.tags" ng-bind="tag" class="badge"></span>
+    </div>
+    <!--<a class="btn-xs btn btn-success" ng-href="/post/{{ post.id }}">Read</a>-->
+    <button
+            class="btn-xs btn btn-danger"
+            ng-click="ctrl.deletePost(post)"
+            ng-if="ctrl.isAuthenticated()"
+        >Delete</button>
+    <hr class=short />
 </div>
 </div>
 <div class=col-md-3>

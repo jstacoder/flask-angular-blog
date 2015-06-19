@@ -1,1 +1,41 @@
-var app = angular.module('app',['app.routes','app.directives','ui.bootstrap']);
+var app = angular.module('app',['app.routes','app.directives','ui.bootstrap','auth.app','ngCookies']);
+
+app.run(appRun);
+/*
+app.config(interceptorConfig);
+
+interceptorConfig.$inject = ['$httpProvider'];
+
+function interceptorConfig($httpProvider) {
+    $httpProvider.interceptors.push('authInterceptor');
+}
+
+authInterceptor.$inject = ['$rootScope','$q','$window','authService','token'];
+function authInterceptor($rootScope,$q,$window,authService,getToken) {
+    var d = $q.defer();
+    return{
+        request:function(cfg){
+            cfg.headers = cfg.headers || {};
+            if(authService.hasData()){
+                cfg.headers.Authorization = "Bearer "+token();
+            }
+            return cfg
+        },
+        response:function(res){
+            console.log(res);
+            if(res.status==401){
+                console.log('error');
+                d.reject(res);
+            }else if(res.status==404){
+                console.log("CATCH 404!!!");
+                d.reject(res);
+            }
+            return res;
+        }
+    };
+}
+*/
+appRun.$inject = ['$rootScope'];
+function appRun($rootScope) {
+    $rootScope.isHidden = true;
+}

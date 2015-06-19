@@ -26,9 +26,11 @@ function appRouteConfig($routeProvider,$locationProvider){
                 return tags;
             }
         },
+        requiresAuth:true,
         navOptions:{
             add:true,
-            text:"Add Post"
+            text:"Add Post",
+            callback:'isAuthenticated'
         }
     })
     .when('/posts',{
@@ -55,6 +57,34 @@ function appRouteConfig($routeProvider,$locationProvider){
             },
             posts:postResolve
         },
+        navOptions:{
+            add:false
+        }
+    })
+    .when('/login',{
+        templateUrl:"/static/partials/login.html",
+        controller:"LoginCtrl",
+        controllerAs:"ctrl",
+        navOptions:{
+            add:false
+        }
+    })
+    .when('/logout',{
+        controller:"LogoutCtrl",
+        navOptions:{
+            add:false
+        },
+        resolve:{
+            logout:function(logout,redirect){
+                logout();
+                redirect('/login');
+            }
+        }
+    })
+    .when('/register',{
+        templateUrl:"/static/partials/register.html",
+        controller:"RegisterCtrl",
+        controllerAs:"ctrl",
         navOptions:{
             add:false
         }
