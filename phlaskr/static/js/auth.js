@@ -98,14 +98,16 @@ function isAuthenticated($window){
     };
 }
 
-login.$inject = ['$window','redirect'];
-function login($window){
+login.$inject = ['$window','redirect','$rootScope'];
+function login($window,redirect,$rootScope){
     return function(tkn){
         if (tkn.token) {
             tkn = tkn.token;
         }
         $window.sessionStorage.setItem('token',JSON.stringify(tkn));
-        redirect('/',true);
+        $rootScope.$broadcast('user:login');
+        $rootScope.$emit('user:login');
+        redirect('/');
     };
 };
 
@@ -193,10 +195,11 @@ function loadUser(b64Decode,token,checkAuth){
     return function(delay){
         var user = {
             name:"anonymuous",
-            loggedIn:false
+            loggedIn:false,
+            id:null
         };
         if (checkAuth(delay || 5)) {
-            while (user == null) {
+            while (user.id == null) {
                     var encoded = token() == null ? false : token().split('.')[1];
                     if (encoded) {
                         user = JSON.parse(b64Decode(encoded));

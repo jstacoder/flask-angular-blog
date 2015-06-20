@@ -2,7 +2,39 @@
     .data1 {
         width:2%;
     }
+    .well > .panel{
+        margin-bottom:0px;
+    }
+    .tag {
+        padding-top:10px;
+        padding-bottom:5px;
+        padding-left:2px;
+        padding-right:2px;
+        color:black;
+    }
+    .taglist {
+        -webkit-column-count: 2;
+        width: 215px;
+    }
+    .taglist > li {
+        padding:7px 1px 7px 0px;
+        display:inline-block;
+        font-size: 12px;
+        width:80px;
+        font-weight: bold;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius:15px;
+        border:1px solid grey;
+        margin:15px 0px 15px 0px;
+    }
+    .taglist > li:not(.label) {
+        color:black;
+    }
 </style>
+<div ng-include="'/static/partials/sidenav.html'"></div>
 <div class="col-md-offset-1 col-md-5">
     <form name="newPostForm" class=form>
         <div class=form-group>
@@ -18,12 +50,12 @@
     </form>
 </div>
 <div class="col-md-offset-1 col-md-4">
-    <div class="well">
+    <div class="well well-sm">
         <div class="panel panel-default">
             <table class="table-hover table-condensed table table-bordered">
                 <thead>
                     <tr>
-                        <th span=2>Related Posts</th>
+                        <th colspan=3>Related Posts</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,13 +76,20 @@
             <div class="form-group col-md-6">
                 <label>Add Tag</label>
                 <input class=form-control ng-model="ctrl.newtag.name" />
-                <ul class="taglist list-unstyled">
-                    <li
-                        ng-repeat="tag in ctrl.tags"
-                        ng-bind=tag.name
-                        ng-class="{'label label-primary':ctrl.selected(tag)}"
-                        ng-click="ctrl.addToSelected(tag)"
-                </ul>
+                <div class=row>
+                    <div class="col-md-12 tags">
+                        <ul class="taglist list-unstyled">
+                            <li
+                                ng-repeat="tag in ctrl.tags"
+                                ng-bind=tag.name
+                                ng-class="{'label label-primary':ctrl.selected(tag)}"
+                                ng-click="ctrl.addToSelected(tag)"
+
+                            >
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

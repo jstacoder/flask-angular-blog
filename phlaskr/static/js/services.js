@@ -8,9 +8,19 @@ app.service('postService',postService)
    .factory('TagService',TagService)
    .factory('tags',tags)
    .factory('addTag',addTag)
-   .factory('loginError',loginError);
+   .factory('loginError',loginError)
+   .factory('addComment',addComment);
    //.factory('deleteModal',deleteModal);
 
+
+
+addComment.$inject = ['$http'];
+function addComment($http) {
+    return function(data){
+        return $http.post('/api/v1/comment/add',data
+        );
+    };
+}
 
 loginError.$inject = ['$rootScope','$timeout'];
 function loginError($rootScope,$timeout){
@@ -58,6 +68,28 @@ function TagService($resource) {
 navLinkService.$inject = ['$route','$location','$parse','$rootScope'];
 
 function navLinkService($route,$location,$parse,$rootScope){
+    var loaded = loaded || false;
+
+    $rootScope.$on('user:logout',function(){
+        console.log('logging out');
+        angular.forEach(self.getLinks(),function(itm){
+            if(itm.requiresAuth){
+                itm.show = false;
+            }
+        });
+    });
+    $rootScope.$on('user:login',function(){
+        console.log('logging in');
+        angular.forEach(self.getLinks(),function(itm){
+            if(itm.requiresAuth){
+                itm.show = true;
+            }
+        });
+    });
+    $rootScope.$on('$routeChangeStart',function(event,newroute,oldroute){
+
+        loadLinks();
+    });
     var self = this,
         links = [];
     self.addLink = addLink;
@@ -83,29 +115,36 @@ function navLinkService($route,$location,$parse,$rootScope){
         return links;
     }
     function loadLinks() {
-        angular.forEach(
-            Object.keys(
-                $route.routes
-            ).filter(function(itm){
-                if(itm.length===1||itm[itm.length-1]!=='/'){
-                    return true;
+        if (!loaded) {
+            loaded = true
+
+            angular.forEach(
+                Object.keys(
+                    $route.routes
+                ).filter(function(itm){
+                    if(itm.length===1||itm[itm.length-1]!=='/'){
+                        return true;
+                    }
+                    return false;
+                }),function(itm){
+                    console.log(itm);
+                    var key = itm,
+                        $injector = angular.bootstrap(document.createElement('body'),['app']),
+                        route = $route.routes[key],
+                        linkData = route.navOptions && route.navOptions.add ? {
+                            href:key,
+                            text:route.navOptions.text,
+                            show:$injector.has(route.navOptions.show) ? $injector.get(route.navOptions.show)() :
+                                $parse(route.navOptions.show)($rootScope,{show:route.navOptions.show}),
+                            requiresAuth:route.requiresAuth
+                        } : {};
+                    console.log(route);
+                    console.log(linkData);
+                    addLink(linkData);
                 }
-                return false;
-            }),function(itm){
-                console.log(itm);
-                var key = itm,
-                    route = $route.routes[key],
-                    linkData = route.navOptions && route.navOptions.add ? {
-                        href:key,
-                        text:route.navOptions.text,
-                        show:route.navOptions.show
-                    } : {};
-                console.log(route);
-                console.log(linkData);
-                addLink(linkData);
-            });
+            );
+        }
     }
-    //loadLinks();
 }
 
 postService.$inject = ['$resource'];

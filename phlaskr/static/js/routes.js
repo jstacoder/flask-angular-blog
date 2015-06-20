@@ -14,6 +14,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         navOptions:{
             add:true,
             text:"Home",
+            show:'true'
         }
     })
     .when('/post/add',{
@@ -30,7 +31,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         navOptions:{
             add:true,
             text:"Add Post",
-            callback:'isAuthenticated'
+            show:'isAuthenticated'
         }
     })
     .when('/posts',{
@@ -42,7 +43,8 @@ function appRouteConfig($routeProvider,$locationProvider){
         },
         navOptions:{
             add:true,
-            text:"Posts"
+            text:"Posts",
+            show:'true'
         }
     })
     .when('/post/:post_id',{
@@ -52,8 +54,8 @@ function appRouteConfig($routeProvider,$locationProvider){
         resolve:{
             post:function(postService,$route){
                 console.log($route);
-                var post = postService.get({post_id:$route.current.params.post_id});
-                return post;
+                return postService.get({post_id:$route.current.params.post_id}).$promise;
+
             },
             posts:postResolve
         },

@@ -158,13 +158,108 @@ function PostsCtrl(posts,deletePost,isAuthenticated) {
     self.isAuthenticated = isAuthenticated;
 }
 
-PostCtrl.$inject = ['post','deletePost','$location','$window','isAuthenticated'];
+PostCtrl.$inject = ['post','deletePost','$location','$window','isAuthenticated','$modal','$scope','addComment','loadUser','redirect'];
 
-function PostCtrl(post,deletePost,$location,$window,isAuthenticated) {
+function PostCtrl(post,deletePost,$location,$window,isAuthenticated,$modal,$scope,addComment,loadUser,redirect) {
     var self = this;
     self.post = post;
+    self.comments = angular.copy(post.comments || []).reverse();
+    self.comment = {
+        content:'',
+        post_id:null,
+        subject:''
+    };
+    self.currentUser = loadUser(5);
+
     self.deletePost = function(post){
         deletePost(post,'/posts');
     };
+
+    function prePend(lst,itm){
+        var newlst = [itm];
+        lst.map(function(i){
+            newlst.push(i);
+        });
+        return newlst;
+    }
+    function insertComment(comment) {
+        if (!isAuthenticated()) {
+            redirect('/login');
+        }
+        if (comment.parent) {
+            var done = false;
+            angular.forEach(self.comments,function(itm){
+                if (!done) {
+                    if(itm.id == comment.parent){
+                        itm.children.push(comment);
+                        done = true;
+                    }
+                }
+            });
+        }else{
+            self.comments = prePend(self.comments,comment);
+        }
+    }
+    self.addPostComment = function(){
+        addComment(
+                   {
+                        subject:self.comment.subject || "reply to "+ self.post.title,
+                        post_id:self.post.id,
+                        parent_comment_id:null,
+                        content:self.comment.content,
+                        author_id:loadUser(10).id
+                    }
+                )
+        .then(function(res){
+            insertComment(res.data);
+        });
+    }
+    self.addComment = function(post_id,cmt_id){
+        var modal = $modal.open(
+            {
+                templateUrl:"/static/partials/comment-modal.html",
+                size:'sm',
+                scope:$scope.$new(),
+                controller:CommentCtrl,
+                controllerAs:"ctrl",
+                resolve:{
+                    postId:function(){
+                        return post_id;
+                    },
+                    parentId:function(){
+                        return cmt_id;
+                    }
+                }
+            }
+        );
+        modal.result.then(function(res){
+            console.log('success: ',res.content,res.post,res.parent);
+            addComment(
+                    {
+                        subject:"reply",
+                        post_id:res.post,
+                        parent_comment_id:res.parent,
+                        content:res.content,
+                        author_id:loadUser(10).id
+                    }
+                )
+                .then(function(res){
+                    console.log('adding a comment',res.data);
+                    insertComment(res.data);
+                });
+        },function(err){
+            console.log('error: ',err)
+        });
+    };
     self.isAuthenticated = isAuthenticated;
+}
+
+CommentCtrl.$inject = ['$scope','postId','parentId'];
+
+function CommentCtrl($scope,postId,parentId) {
+    var self = this;
+    self.reply = {
+        parent:parentId,
+        post:postId
+    };
 }

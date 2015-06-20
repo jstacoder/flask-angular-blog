@@ -148,6 +148,11 @@ class Post(BaseModel):
         self._context = {}
         super(Post,self).__init__(*args,**kwargs)
 
+    def add_comment(self,*args,**kwargs):
+        comment = Comment(post_id=self.id,**kwargs).save()
+        return self
+
+
     @property
     def slug(self):
         return self.title.lower().replace(' ','_').replace(':','').replace('-','').replace('.','')
@@ -276,6 +281,7 @@ class Comment(BaseModel):
     subject = sa.Column(sa.String(255))
     post_id = sa.Column(sa.Integer,sa.ForeignKey('posts.id'))
     parent_comment_id = sa.Column(sa.Integer,sa.ForeignKey('comments.id'))
+    date_added = sa.Column(sa.DateTime,default=sa.func.now())
 
     content = sa.Column(sa.Text)
     author_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
@@ -290,7 +296,11 @@ class Comment(BaseModel):
             subject=self.subject,
             post_id=self.post_id,
             content=self.content,
-            author=self.author and self.author.name or '',
+            author=self.author and self.author.username or '',
+            id=self.id,
+            children=[x.to_json() for x in self.replys],
+            parent=self.parent_comment_id,
+            date=self.date_added
         )
 
 

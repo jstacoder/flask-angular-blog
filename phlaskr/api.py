@@ -1,5 +1,5 @@
 from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort
-from models import Post,Tag,Email,AppUser as User
+from models import Comment,Post,Tag,Email,AppUser as User
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 
 api = Flask(__name__+'api',static_folder='static')
@@ -106,6 +106,13 @@ class LoginView(views.MethodView):
                 return response
         return json_response(['error']),404
 
+class AddCommentView(views.MethodView):
+    def post(self):
+        data = json.loads(request.data)
+        return json_response(Comment.get_new(**data).to_json())
+
+
+
 api.add_url_rule('/post','get_posts',view_func=PostView.as_view('get_posts'))
 api.add_url_rule('/post/<int:post_id>','get_post',view_func=PostView.as_view('get_post'))
 api.add_url_rule('/post/delete/<int:post_id>','delete_post',view_func=DeletePostView.as_view('delete_post'))
@@ -113,6 +120,7 @@ api.add_url_rule('/tag','get_tags',view_func=TagView.as_view('get_tags'))
 api.add_url_rule('/tag/<int:tag_id>','get_tag',view_func=TagView.as_view('get_tag'))
 api.add_url_rule('/tag/add','add_tag',view_func=AddTagView.as_view('add_tag'))
 api.add_url_rule('/login','login',view_func=LoginView.as_view('login'))
+api.add_url_rule('/comment/add','add_comment',view_func=AddCommentView.as_view('add_comment'))
 
 
 if __name__ == "__main__":

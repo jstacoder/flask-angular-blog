@@ -12,8 +12,12 @@ a.unstyle {
     text-decoration:none;
 }
 
-.panel.comment-panel {
-    border:0px;
+.comment-panel {
+    -webkit-box-shadow: 6px 7px 6px -2px rgba(52, 50, 50, 0.64);
+    -moz-box-shadow:    6px 7px 6px -2px rgba(52, 50, 50, 0.64);
+    box-shadow:         6px 7px 6px -2px rgba(52, 50, 50, 0.64);
+    border:.3% solid grey;
+    padding: 15px 0px 0px 0px;
 }
 
 .panel-heading {
@@ -21,8 +25,16 @@ a.unstyle {
 }
 
 .panel-footer {
-	padding: 1px 15px;
-	color: #A0A0A0;
+    padding: 16px 20px;
+    color: #A0A0A0;
+    margin-bottom: 25px;
+    border-bottom: 2px solid black;
+    background-color: transparent;
+    border-top: 0;
+}
+
+.panel > .lead {
+    padding-left:3%;
 }
 
 .profile-img {
@@ -37,4 +49,152 @@ a.unstyle {
 
 .form-group.bottom-margin {
     margin-bottom:24%;
+}
+
+.media {
+    padding:15px;
+    border:1px solid grey;
+}
+
+.media .btn {
+    margin-left:8%;
+}
+
+
+.media-body {
+    padding:25px 1px 1px 80px;
+}
+
+.media-heading {
+    margin-bottom:5%;
+}
+div.media-body a img,
+li.media a img {
+    margin-bottom:15px;
+}
+
+body,html{
+    height: 100%;
+  }
+
+  nav.sidebar, .main{
+    -webkit-transition: margin 200ms ease-out;
+      -moz-transition: margin 200ms ease-out;
+      -o-transition: margin 200ms ease-out;
+      transition: margin 200ms ease-out;
+  }
+
+  .main{
+    padding: 10px 10px 0 10px;
+  }
+
+ @media (min-width: 765px) {
+
+    .main{
+      position: absolute;
+      width: calc(100% - 40px);
+      margin-left: 40px;
+      float: right;
+    }
+
+    nav.sidebar:hover + .main{
+      margin-left: 200px;
+    }
+
+    nav.sidebar.navbar.sidebar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+      margin-left: 0px;
+    }
+
+    nav.sidebar .navbar-brand, nav.sidebar .navbar-header{
+      text-align: center;
+      width: 100%;
+      margin-left: 0px;
+    }
+
+    nav.sidebar a{
+      padding-right: 13px;
+    }
+
+    nav.sidebar .navbar-nav > li:first-child{
+      border-top: 1px #e5e5e5 solid;
+    }
+
+    nav.sidebar .navbar-nav > li{
+      border-bottom: 1px #e5e5e5 solid;
+    }
+
+    nav.sidebar .navbar-nav .open .dropdown-menu {
+      position: static;
+      float: none;
+      width: auto;
+      margin-top: 0;
+      background-color: transparent;
+      border: 0;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    nav.sidebar .navbar-collapse, nav.sidebar .container-fluid{
+      padding: 0 0px 0 0px;
+    }
+
+    .navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
+      color: #777;
+    }
+
+    nav.sidebar{
+      width: 200px;
+      height: 100%;
+      margin-left: -200px;
+      float: left;
+      margin-bottom: 0px;
+      margin-top:-20px;
+    }
+
+    nav.sidebar li {
+      width: 100%;
+    }
+
+    nav.sidebar:hover{
+      margin-left: -45px;
+    }
+
+    .forAnimate{
+      opacity: 0;
+    }
+  }
+
+  @media (min-width: 1330px) {
+
+    .main{
+      width: calc(100% - 200px);
+      margin-left: 200px;
+    }
+
+    nav.sidebar{
+      margin-left: 0px;
+      float: left;
+    }
+
+    nav.sidebar .forAnimate{
+      opacity: 1;
+    }
+  }
+
+  nav.sidebar .navbar-nav .open .dropdown-menu>li>a:hover, nav.sidebar .navbar-nav .open .dropdown-menu>li>a:focus {
+    color: #CCC;
+    background-color: transparent;
+  }
+
+  nav:hover .forAnimate{
+    opacity: 1;
+  }
+  section{
+    padding-left: 15px;
+  }
+
+.blog-content {
+    overflow-wrap:break-word;
+    margin-top:10%;
+    margin-bottom:15%;
 }
