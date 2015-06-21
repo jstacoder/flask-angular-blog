@@ -1,0 +1,24 @@
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Setting</th>
+            <th>Value</th>
+            <th ng-if="ctrl.anyEdits()"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(k,v) in ctrl.settings">
+            <td ng-click="ctrl.setEditMode(k)">{{ k }}</td>
+            <td ng-if="!ctrl.edits[k]">{{ ctrl.settings[k] }}</td>
+            <td ng-if="ctrl.edits[k]">
+                <div class="input-group-sm input-group">
+                    <input type=text ng-model=ctrl.settings[k] value=v name=value class="form-control input-sm" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" ng-click="ctrl.set(k,v)">Set</button>
+                    </span>
+                </div><!-- /input-group -->
+            </td>
+        </tr>
+    </tbody>
+    <!--{{ ctrl.settings | json }}-->
+</table>

@@ -1,4 +1,4 @@
-var app = angular.module('app.services',['ngResource']);
+var app = angular.module('app.services',['ngResource','app.settings']);
 
 app.service('postService',postService)
    .factory('posts',posts)
@@ -9,10 +9,18 @@ app.service('postService',postService)
    .factory('tags',tags)
    .factory('addTag',addTag)
    .factory('loginError',loginError)
-   .factory('addComment',addComment);
+   .factory('addComment',addComment)
+   .service('settingService',settingService);
    //.factory('deleteModal',deleteModal);
 
 
+
+settingService.$inject = ['setting'];
+
+function settingService(setting) {
+    var self = this;
+    self.settings = setting;
+}
 
 addComment.$inject = ['$http'];
 function addComment($http) {
@@ -186,15 +194,15 @@ function addPost(posts) {
 }
 
 
-deletePost.$inject = ['posts','$modal','$location'];
+deletePost.$inject = ['posts','$modal','$location','setting'];
 
-function deletePost(posts,$modal,$location) {
+function deletePost(posts,$modal,$location,setting) {
     return function(post,redirectTo){
         $modal.open({
            templateUrl:"/static/partials/modal.html",
            controller:function($scope){
                 $scope.title = 'Confirm Delete';
-                $scope.content = 'Are you sure you want to delete this?'
+                $scope.content = setting.get('DELETE_MSG');
            }
         }).result.then(function(res){
                        console.log(res);

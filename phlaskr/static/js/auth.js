@@ -98,8 +98,8 @@ function isAuthenticated($window){
     };
 }
 
-login.$inject = ['$window','redirect','$rootScope'];
-function login($window,redirect,$rootScope){
+login.$inject = ['$window','redirect','$rootScope','$modal','loadUser'];
+function login($window,redirect,$rootScope,$modal,loadUser){
     return function(tkn){
         if (tkn.token) {
             tkn = tkn.token;
@@ -107,6 +107,8 @@ function login($window,redirect,$rootScope){
         $window.sessionStorage.setItem('token',JSON.stringify(tkn));
         $rootScope.$broadcast('user:login');
         $rootScope.$emit('user:login');
+        $rootScope.current  = {username:loadUser().username};
+        $modal.open({templateUrl:"/static/partials/welcome-modal.html",$scope:$rootScope.$new(),size:'sm'});
         redirect('/');
     };
 };

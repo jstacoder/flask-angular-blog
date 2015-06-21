@@ -47,6 +47,17 @@ function appRouteConfig($routeProvider,$locationProvider){
             show:'true'
         }
     })
+    .when('/settings',{
+        templateUrl:"/static/partials/settings.html",
+        controller:"SettingsCtrl",
+        controllerAs:"ctrl",
+        requiresAuth:true,
+        navOptions:{
+            add:true,
+            text:"Settings",
+            show:"isAuthenticated"
+        }
+    })
     .when('/post/:post_id',{
         templateUrl:'static/partials/post.html',
         controller:'PostCtrl',

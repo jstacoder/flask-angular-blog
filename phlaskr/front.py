@@ -45,6 +45,11 @@ front.add_url_rule(
     'register',
     view_func = IndexView.as_view('register')
 )
+front.add_url_rule(
+    '/settings',
+    'settings',
+    view_func = IndexView.as_view('settings')
+)
 
 if __name__ == "__main__":
     front.run('0.0.0.0',8000,debug=True)

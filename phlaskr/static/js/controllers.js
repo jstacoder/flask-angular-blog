@@ -7,11 +7,62 @@ app.controller('HomeCtrl',HomeCtrl)
    .controller('NavCtrl',NavCtrl)
    .controller('LoginCtrl',LoginCtrl)
    .controller('RegisterCtrl',RegisterCtrl)
-   .controller('LogoutCtrl',LogoutCtrl);
+   .controller('LogoutCtrl',LogoutCtrl)
+   .controller('SettingsCtrl',SettingsCtrl);
 
-LoginCtrl.$inject = ['login','$cookies','sendLogin','redirect','loginError'];
 
-function LoginCtrl(login,$cookies,sendLogin,redirect,loginError) {
+SettingsCtrl.$inject = ['settingService','$scope','$timeout'];
+
+function SettingsCtrl(settingService,$scope,$timeout) {
+    var self = this;
+    self.settings = settingService.settings.getSettings();
+
+    setup();
+
+    function setup() {
+        self.edits = {};
+        angular.forEach(
+            Object.keys(
+                self.settings
+            ),function(itm){
+                self.edits[itm] = false;
+        });
+    }
+
+    function setEditMode(key) {
+        self.edits[key] = !self.edits[key];
+    }
+
+
+    function setSetting(k,v) {
+        settingService.settings.set(k,v);
+        self.settings = settingService.settings.getSettings();
+    }
+
+    self.setEditMode = setEditMode;
+
+    self.anyEdits = function(){
+        var rtn = false;
+        angular.forEach(self.edits,function(itm,key){
+                if (itm) {
+                    rtn = true;
+                }
+        });
+        return rtn;
+    };
+
+    self.set = function(k,v){
+            //setSetting(k,v);
+            settingService.settings.set(k,v);
+            self.settings[k] = v;
+            setEditMode(k);
+        //$scope.$digest ? $scope.$digest(setSetting) : $scope.$apply(setSetting);
+    }
+}
+
+LoginCtrl.$inject = ['login','$cookies','sendLogin','redirect','loginError','$modal'];
+
+function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal) {
     var self = this;
 
 
@@ -31,6 +82,7 @@ function LoginCtrl(login,$cookies,sendLogin,redirect,loginError) {
             .then(function(res){
                 console.log(res);
                 res && login(res.data && (res.data.token || res.data)  || res);
+
                 //console.log('success');//,res.data);
                 },function(err){
                     console.log('error',err);
@@ -140,11 +192,23 @@ function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag) {
     resetTagForm();
 }
 
-HomeCtrl.$inject = [];
+HomeCtrl.$inject = ['$rootScope','$modal'];
 
-function HomeCtrl() {
+function HomeCtrl($rootScope,$modal) {
     var self = this;
     this.test = 'hi';
+    self.justLoggedIn = self.justLoggedIn || false;
+
+    $rootScope.$on('user:login',function(){
+        console.log('home log 2');
+        self.justLoggedIn = true;
+    });
+
+    if (self.justLoggedIn) {
+        self.justLoggedIn = false;
+        console.log('home log');
+        $modal.open({templateUrl:"/static/partials/welcome-modal.html"}).result.then(function(){});
+    }
 }
 
 PostsCtrl.$inject = ['posts','deletePost','isAuthenticated'];
