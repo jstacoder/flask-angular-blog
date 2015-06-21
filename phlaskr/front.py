@@ -1,9 +1,10 @@
 import os
 from flask import Flask,render_template,views
+from app_factory import get_app
 
-front  = Flask(__name__+'front',static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)))
+front  = get_app('front',static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)))
 
-front.config.DATABASE_URI = 'sqlite:///test3.db'
+#front.config.DATABASE_URI = 'sqlite:///test3.db'
 
 class IndexView(views.MethodView):
     def get(self,post_id=None):

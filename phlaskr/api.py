@@ -1,14 +1,13 @@
 from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort
 from models import Comment,Post,Tag,Email,AppUser as User
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
+from app_factory import get_app
 
-api = Flask(__name__+'api',static_folder='static')
 
-api.config['DATABASE_URI'] = 'sqlite:///test3.db'
+api = get_app('api',static_folder='static')
+
+#api.config['DATABASE_URI'] = 'sqlite:///test3.db'
 api.config['SECRET_KEY'] = 'xxx'
-
-
-
 
 def json_response(content):
     res = make_response(json.dumps(content))
@@ -22,7 +21,6 @@ def load_user(tkn):
     except:
         return redirect('/login')
     return AppUser.get_by_id(data['id'])
-
 
 @api.before_request
 def check_auth():
@@ -38,7 +36,7 @@ class TagView(views.MethodView):
         else:
             tag = Tag.get_by_id(tag_id)
             if tag:
-                return json_response(name=tag.name,description=tag.description,id=tag.id)
+                return json_response(dict(name=tag.name,description=tag.description,id=tag.id))
         return json_response(['error']),404
 
 class AddTagView(views.MethodView):
@@ -111,7 +109,28 @@ class AddCommentView(views.MethodView):
         data = json.loads(request.data)
         return json_response(Comment.get_new(**data).to_json())
 
+class RegisterUserView(views.MethodView):
+    def post(self):
+        if 'application/json' in request.headers['Content-Type']:
+            data = json.loads(request.data)
+        else:
+            data = dict(request.form.items())
+        print data
+        if not user_exists(data['username']):
+            if not email_exists(data['email']):
+                rtn = json_response(User.get_new(**data).to_json())
+            else:
+                rtn = json_response(dict(error=True,message="email in use"))
+        else:
+            rtn = json_response(dict(error=True,message="username in use"))
+        return rtn,200
 
+def user_exists(username):
+    user = User.query.filter_by(username=username).first()
+    return user is not None
+
+def email_exists(email):
+    return Email.query.filter_by(address=email).first() is not None
 
 api.add_url_rule('/post','get_posts',view_func=PostView.as_view('get_posts'))
 api.add_url_rule('/post/<int:post_id>','get_post',view_func=PostView.as_view('get_post'))
@@ -121,7 +140,7 @@ api.add_url_rule('/tag/<int:tag_id>','get_tag',view_func=TagView.as_view('get_ta
 api.add_url_rule('/tag/add','add_tag',view_func=AddTagView.as_view('add_tag'))
 api.add_url_rule('/login','login',view_func=LoginView.as_view('login'))
 api.add_url_rule('/comment/add','add_comment',view_func=AddCommentView.as_view('add_comment'))
-
+api.add_url_rule('/user/add','add_user',view_func=RegisterUserView.as_view('add_user'))
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0',port=8000,debug=True)

@@ -5,6 +5,7 @@ from inflection import pluralize, underscore
 from jinja2 import Environment
 from bcrypt import checkpw,gensalt,hashpw
 import sqlalchemy as sa
+from dates import format_date
 
 
 _engine = lambda DB_URI: sa.create_engine(DB_URI,echo=True)
@@ -121,6 +122,8 @@ class Post(BaseModel):
     _env = None
     _context = {}
 
+    author_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
+    author = sa.orm.relationship('AppUser',backref=sa.orm.backref('posts',lazy='dynamic'),uselist=False)
     title = sa.Column(sa.String(255),nullable=False)#,unique=True)
     _content = sa.Column(sa.Text)
     use_jinja = sa.Column(sa.Boolean,default=False)
@@ -174,7 +177,7 @@ class Post(BaseModel):
             title=self.title,
             slug=self.slug,
             content=self.content,
-            date_added=self.date_added,
+            date_added=format_date(self.date_added),
             id=self.id,
             tags=[x.name for x in self.tags.all()],
             comments=[x.to_json() for x in self.comments.all()]
@@ -243,6 +246,9 @@ class AppUser(BaseModel):
     def __init__(self,*args,**kwargs):
         if 'password' in kwargs:
             self.pwhash = kwargs.pop('password')
+        if 'email' in kwargs:
+            email = [Email(address=kwargs.pop('email')).save()]
+            kwargs['emails'] = kwargs.get('emails') and (email + kwargs.pop('emails')) or email
         super(AppUser,self).__init__(*args,**kwargs)
         self.profile = UserProfile(id=self.id).save()
 
@@ -276,6 +282,15 @@ class Tag(BaseModel):
                                 secondary='posts_tags'
     )
 
+    def to_json(self):
+        return dict(
+            name=self.name,
+            description=self.description,
+            id=self.id
+        )
+
+
+
 class Comment(BaseModel):
 
     subject = sa.Column(sa.String(255))
@@ -300,7 +315,7 @@ class Comment(BaseModel):
             id=self.id,
             children=[x.to_json() for x in self.replys],
             parent=self.parent_comment_id,
-            date=self.date_added
+            date=format_date(self.date_added)
         )
 
 

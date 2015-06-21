@@ -4,8 +4,8 @@ from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug import run_simple
 from gevent.pywsgi import WSGIServer
 
-front.config['DATABASE_URI'] = 'sqlite:///test3.db'
-api.config['DATABASE_URI'] = 'sqlite:///test3.db'
+#front.config['DATABASE_URI'] = 'sqlite:///test3.db'
+#api.config['DATABASE_URI'] = 'sqlite:///test3.db'
 
 application = DispatcherMiddleware(front,{
     '/api/v1':api
