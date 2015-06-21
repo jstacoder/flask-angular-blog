@@ -27,6 +27,7 @@ def check_auth():
     g.signer = signer(api.config['SECRET_KEY'],60*60*24*7)
     if request.cookies.get('NGAPP_AUTH_TKN'):
         g.user = load_user(request.cookies.get('NGAPP_AUTH_TKN'))
+        print g.user
 
 
 class TagView(views.MethodView):

@@ -1,6 +1,8 @@
 import os
-from flask import Flask,render_template,views
+from flask import Flask,render_template,views,g,request
+from models import AppUser
 from app_factory import get_app
+from itsdangerous import TimedJSONWebSignatureSerializer as signer
 
 front  = get_app('front',static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)))
 
@@ -10,6 +12,19 @@ class IndexView(views.MethodView):
     def get(self,post_id=None):
         return render_template('index.html')
 
+def load_user(tkn):
+    try:
+        data = g.get('signer').loads(tkn)
+    except:
+        return redirect('/login')
+    return AppUser.get_by_id(data['id'])
+
+@front.before_request
+def check_auth():
+    g.signer = signer(front.config['SECRET_KEY'],60*60*24*7)
+    if request.cookies.get('NGAPP_AUTH_TKN'):
+        g.user = load_user(request.cookies.get('NGAPP_AUTH_TKN'))
+        print g.user
 
 front.add_url_rule(
     '/',

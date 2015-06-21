@@ -4,11 +4,8 @@ from models import AppUser,UserProfile,Email,Post,Tag,Comment
 from api import api
 
 def start():
-    ctx = api.test_request_context()
-    ctx.push()
     AppUser._engine = create_engine(api.config.get('DATABASE_URI'),echo=True)
     AppUser.metadata.bind = AppUser._engine
-    ctx.pop()
 
 def seed():
     kyle = AppUser.get_new(username='jstacoder',password='test')
@@ -18,10 +15,13 @@ def seed():
     post = Post.get_new(title='test post',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
 
 def reset():
+    ctx = api.test_request_context()
+    ctx.push()
     start()
     AppUser.metadata.drop_all()
     AppUser.metadata.create_all()
     seed()
+    ctx.pop()
 
 if __name__ == "__main__":
     reset()
