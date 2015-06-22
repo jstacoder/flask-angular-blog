@@ -1,0 +1,6 @@
+{
+     "dependencies": {
+            "bower": "latest"
+             },
+    "engines":"io.js"
+}
