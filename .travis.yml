@@ -1,14 +1,15 @@
 language: python
 
 python:
+    - "2.5"
     - "2.6"
     - "2.7"
     - "pypy"
 
 #install deps
 install:
-    - "pip install -r requirements.txt -vvv"
-    - "pip install . -vvv"
+    - "pip install . -q"
+    - "pip install -r test_requirements.txt -q"
       #- "python setup.py install"
     - "cd phlaskr"
     - "./mk_local_settings.py"
