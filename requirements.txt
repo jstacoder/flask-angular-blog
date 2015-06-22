@@ -2,7 +2,7 @@ alembic==0.7.6
 click==4.0
 -e git+https://github.com/mitsuhiko/flask.git@87222087b333c4f9ccc665e787fdf304cabeba73#egg=Flask-master
 Flask-Testing==0.4.2
-gevent==1.0.2
+#gevent==1.0.2
 greenlet==0.4.7
 honcho==0.6.6
 inflection==0.3.1
