@@ -20,4 +20,8 @@ application = DispatcherMiddleware(front,{
 
 
 if __name__ == "__main__":
-    run_server('0.0.0.0',8000,application)
+    port = int(os.environ.get("PORT") or 8000)
+    args = [port,application]
+    if not os.environ.get("HEROKU"):
+        args.insert(0,'0.0.0.0')
+    run_server(*args)
