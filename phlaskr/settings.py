@@ -2,7 +2,7 @@ from local_settings import LocalConfig
 
 class BaseConfig(LocalConfig):
 
-    DATABASE_URI = 'sqlite:///test4.db'
+    DATABASE_URI = 'sqlite:///test3.db'
     SECRET_KEY = 'testing'
     COOKIE_TTL = 100060
     DEBUG = True

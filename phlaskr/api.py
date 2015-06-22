@@ -1,5 +1,5 @@
 from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort
-from models import Comment,Post,Tag,Email,AppUser as User
+from models import Comment,Post,Tag,Email,AppUser as User,PublicUser
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from app_factory import get_app
 
@@ -8,6 +8,10 @@ api = get_app('api',static_folder='static')
 
 #api.config['DATABASE_URI'] = 'sqlite:///test3.db'
 api.config['SECRET_KEY'] = 'xxx'
+
+def get_data():
+    return json.loads(request.data) if request.data else dict(request.form.items())
+
 
 def json_response(content):
     res = make_response(json.dumps(content))
@@ -48,6 +52,12 @@ class AddTagView(views.MethodView):
             tag = Tag(**dict(request.form.items()))
         tag.save()
         return json_response(dict(name=tag.name,description=tag.description,id=tag.id))
+
+
+class PostListView(views.MethodView):
+    def get(self,user_id=None,tag_id=None):
+        if user_id is not None:
+            return json_response([x.to_json() for x in User.get_by_id(user_id).posts]),200
 
 class PostView(views.MethodView):
     def get(self,post_id=None):
@@ -92,10 +102,12 @@ class DeletePostView(views.MethodView):
 class LoginView(views.MethodView):
     def post(self):
 
-        data = json.loads(request.data)
+        data = json.loads(request.data) if request.data else dict(request.form.items())
+        open('log3','w').write(json.dumps(data))
         email = Email.query.filter_by(address=data.get('email')).first()
         if email is None:
-            return json_response(['error']),404
+            return json_response(['error']),403
+
         else:
             if email.user.check_password(data.get('password')):
                 tkn = g.signer.dumps(email.user.to_json())
@@ -103,12 +115,12 @@ class LoginView(views.MethodView):
                 response.headers['Content-Type'] = 'application/json'
                 response.set_cookie('NGAPP_AUTH_TKN',tkn,expires=60*60*24)
                 return response
-        return json_response(['error']),404
+            else:
+                return json_response(['error']),403
 
 class AddCommentView(views.MethodView):
     def post(self):
-        data = json.loads(request.data)
-        return json_response(Comment.get_new(**data).to_json())
+        return json_response(Comment.get_new(**get_data()).to_json())
 
 class RegisterUserView(views.MethodView):
     def post(self):
@@ -126,8 +138,22 @@ class RegisterUserView(views.MethodView):
             rtn = json_response(dict(error=True,message="username in use"))
         return rtn,200
 
-def user_exists(username):
-    user = User.query.filter_by(username=username).first()
+class AddPublicUserView(views.MethodView):
+    def post(self):
+        data = get_data()
+        print data
+        open('log2','w').write(json.dumps(data))
+        if not user_exists(data['username'],True):
+            if not email_exists(data['email']):
+                rtn = json_response(PublicUser.get_new(**data).to_json())
+            else:
+                rtn = json_response(dict(error=True,message="email in use"))
+        else:
+            rtn = json_response(dict(error=True,message="username in use"))
+        return rtn,200
+
+def user_exists(username,public=False):
+    user = ((public and PublicUser) or User).query.filter_by(username=username).first()
     return user is not None
 
 def email_exists(email):
@@ -142,6 +168,8 @@ api.add_url_rule('/tag/add','add_tag',view_func=AddTagView.as_view('add_tag'))
 api.add_url_rule('/login','login',view_func=LoginView.as_view('login'))
 api.add_url_rule('/comment/add','add_comment',view_func=AddCommentView.as_view('add_comment'))
 api.add_url_rule('/user/add','add_user',view_func=RegisterUserView.as_view('add_user'))
+api.add_url_rule('/user/<int:user_id>/posts','user_posts',view_func=PostListView.as_view('user_posts'))
+api.add_url_rule('/public/add','add_public',view_func=AddPublicUserView.as_view('add_public'))
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0',port=8000,debug=True)

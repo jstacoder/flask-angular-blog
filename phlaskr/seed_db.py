@@ -13,6 +13,17 @@ def seed():
     email.save()
     tag = Tag.get_new(name='tag')
     post = Post.get_new(title='test post',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
+    post = Post.get_new(title='test post2',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
+    post = Post.get_new(title='test post3',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
+    post = Post.get_new(title='test post4',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
+    joel = AppUser.get_new(username='jr',password='test')
+    email = Email(address='test@test.com',user_id=joel.id)
+    email.save()
+    tag = Tag.get_new(name='tags')
+    post = Post.get_new(title='test postwww',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='test postwww2',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='test postwww3',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='test postwww4',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
 
 def reset():
     ctx = api.test_request_context()

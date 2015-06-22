@@ -11,7 +11,8 @@ application = DispatcherMiddleware(front,{
     '/api/v1':api
 })
 
-
+print api.config.get('DATABASE_URI')
+print front.config.get('DATABASE_URI')
 if __name__ == "__main__":
     server = WSGIServer(('0.0.0.0',8000),application)
     server.serve_forever()

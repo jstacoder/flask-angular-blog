@@ -9,7 +9,7 @@ front  = get_app('front',static_folder='static',template_folder='templates',root
 #front.config.DATABASE_URI = 'sqlite:///test3.db'
 
 class IndexView(views.MethodView):
-    def get(self,post_id=None):
+    def get(self,post_id=None,extra=None):
         return render_template('index.html')
 
 def load_user(tkn):
@@ -65,6 +65,11 @@ front.add_url_rule(
     '/settings',
     'settings',
     view_func = IndexView.as_view('settings')
+)
+front.add_url_rule(
+    '/user/<path:extra>',
+    'user_extra',
+    view_func = IndexView.as_view('user_extyra')
 )
 
 if __name__ == "__main__":

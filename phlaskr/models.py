@@ -8,7 +8,7 @@ import sqlalchemy as sa
 from dates import format_date
 
 
-_engine = lambda DB_URI: sa.create_engine(DB_URI,echo=True)
+_engine = lambda DB_URI,echo=True: sa.create_engine(DB_URI,echo=echo)
 
 def get_base():
     base = declarative_base()
@@ -34,6 +34,22 @@ class DateMixin(object):
     @declared_attr
     def date_modified(self):
         return sa.Column(sa.DateTime,default=sa.func.now(),onupdate=sa.func.now())
+
+class PasswordHashMixin(object):
+    #__abstract__ = True
+
+    _pwhash = sa.Column(sa.Text)
+
+    @property
+    def pwhash(self):
+        raise ValueError
+
+    @pwhash.setter
+    def pwhash(self,data):
+        self._pwhash = hashpw(data,gensalt())
+
+    def check_password(self,pw):
+        return checkpw(pw,self._pwhash)
 
 class BaseModel(get_base()):
     __abstract__ = True
@@ -78,6 +94,10 @@ class BaseModel(get_base()):
     def get_by_id(cls,item_id):
         return cls.query.filter(cls.id==item_id).first()
 
+    @classmethod
+    def get(cls,*args,**kwargs):
+        return cls.get_by_id(*args,**kwargs)
+
     def save(self):
         self.session.add(self)
         self.session.commit()
@@ -90,33 +110,6 @@ class BaseModel(get_base()):
         self.session.delete(self)
         return self in self.session.deleted and\
             self.session.commit()
-
-'''
-class UserPasswordHash(DateMixin,BaseModel):
-    __tablename__ = 'user_passwords'
-
-    user_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'),nullable=False)
-    _hash = sa.Column(sa.Text,nullable=False)
-
-    @property
-    def hash(self):
-        return 'private'
-
-    @hash.setter
-    def hash(self,data):
-        self._hash = data
-
-    def __init__(self,*args,**kwargs):
-        if not 'user_id' in kwargs:
-            raise UserMissingException
-        self.user_id = kwargs.pop('user_id')
-        self._hash = hashpw(kwargs.pop('hash') or kwargs.pop('_hash'),gensalt())
-        super(UserPasswordHash,self).__init__(*args,**kwargs)
-
-    def check(self,pw):
-        return checkpw(pw,self._hash)
-
-'''
 
 class Post(BaseModel):
     _env = None
@@ -231,14 +224,12 @@ class UserProfile(BaseModel):
                     self.age,self.date_added,self.location
                )
 
-class AppUser(BaseModel):
+class AppUser(PasswordHashMixin,BaseModel):
 
     emails = sa.orm.relationship('Email',lazy='dynamic')
     username = sa.Column(sa.String(255),unique=True,nullable=False)
     user_profile_id = sa.Column(sa.Integer,sa.ForeignKey('user_profiles.id'))
     profile = sa.orm.relationship('UserProfile',uselist=False,backref=sa.orm.backref('user'))
-    _pwhash = sa.Column(sa.Text)#sa.orm.relationship('UserPasswordHash')
-    #_pwid = sa.Column(sa.Integer,sa.ForeignKey('user_passwords'))
 
     def __repr__(self):
         return str(self.username)
@@ -289,8 +280,6 @@ class Tag(BaseModel):
             id=self.id
         )
 
-
-
 class Comment(BaseModel):
 
     subject = sa.Column(sa.String(255))
@@ -319,6 +308,26 @@ class Comment(BaseModel):
         )
 
 
+class PublicUser(BaseModel,PasswordHashMixin):
+    username = sa.Column(sa.String(255),unique=True,nullable=False)
+    email_id = sa.Column(sa.Integer,sa.ForeignKey('emails.id'))
+    email = sa.orm.relation('Email',backref=sa.orm.backref('public_user',uselist=False))
+
+    def __init__(self,*args,**kwargs):
+        if 'password' in kwargs:
+            self.pwhash = kwargs.pop('password')
+        if 'email' in kwargs:
+            email = Email.get_new(address=kwargs.pop('email'))
+            kwargs['email_id'] = email.id
+        super(PublicUser,self).__init__(*args,**kwargs)
+
+    def to_json(self):
+        return dict(
+            username=self.username,
+            id=self.id,
+            email=self.email.address
+        )
+
 posts_tags =\
     sa.Table(
         'posts_tags',
@@ -326,3 +335,5 @@ posts_tags =\
         sa.Column('post_id',sa.Integer,sa.ForeignKey('posts.id')),
         sa.Column('tag_id',sa.Integer,sa.ForeignKey('tags.id'))
 )
+
+

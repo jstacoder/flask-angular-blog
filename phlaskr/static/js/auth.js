@@ -19,6 +19,19 @@ app.factory('register',register);
 app.factory('b64Decode',b64Decode);
 app.factory('gravatarUrl',gravatarUrl);
 app.factory('loadUser',loadUser);
+app.factory('getAvatar',getAvatar);
+app.filter('avatar',avatarFilter);
+app.filter('email',emailFilter);
+
+
+emailFilter.$inject = [];
+
+function emailFilter() {
+    return function(data,num){
+        num = num ? num : 0;
+        return data.emails[num].address
+    }
+}
 
 
 
@@ -183,13 +196,29 @@ function b64Decode($window){
     };
 }
 
-gravatarUrl.$inject = ['md5','loadUser'];
-function gravatarUrl(md5,loadUser){
+gravatarUrl.$inject = ['getAvatar','loadUser'];
+function gravatarUrl(getAvatar,loadUser){
     var user = loadUser(5);
     if (user && user.emails.length) {
-        return "http://www.gravatar.com/avatar/"+md5(user.emails[0]);
+        return getAvatar(user.emails[0]);
     }
     return '';
+}
+
+
+getAvatar.$inject = ['md5'];
+function getAvatar(md5) {
+    return function avatar(email,size){
+        var url = "http://www.gravatar.com/avatar/"+md5(email);
+        return size ? url + '?s=' + size : url;
+    };
+}
+
+avatarFilter.$inject = ['getAvatar'];
+function avatarFilter(getAvatar) {
+    return function avatarFilter(email,size){
+        return getAvatar(email,size);
+    };
 }
 
 loadUser.$inject = ['b64Decode','token','checkAuth'];

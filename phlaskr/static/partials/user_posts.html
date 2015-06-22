@@ -1,0 +1,24 @@
+<accordion close-others="true">
+    <accordion-group ng-repeat="post in ctrl.posts">
+        <accordion-heading>
+            <span ng-class="{'glyphicon-menu-right':!isOpen,'glyphicon-menu-left':isOpen}" class="glyphicon"></span>
+            id: {{ post.id }}, posted on: {{ post.date_added | date:short }} {{ post.slug }} - comments: {{ post.comments.length }}
+        </accordion-heading>
+        <div class=row>
+            <div class=col-md-2>
+                <list-group>
+                    <list-group-item ng-repeat="(k,v) in post">
+                        {{ k }}
+                    </list-group-item>
+                </list-group>
+            </div>
+                <div class=col-md-5>
+                <list-group>
+                    <list-group-item ng-repeat="(k,v) in post track by $index">
+                        {{ v }}
+                    </list-group-item>
+                </list-group>
+            </div>
+        </div>
+    </accordion-group>
+</accordion>

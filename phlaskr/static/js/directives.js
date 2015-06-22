@@ -1,9 +1,41 @@
 var app = angular.module('app.directives',[]);
 
 app.directive('currentYear',currentYear)
-   .directive('navBar',navBar);
+   .directive('navBar',navBar)
+   .directive('listGroup',listGroup)
+   .directive('listGroupItem',listGroupItem);
 
-navBar.$inject = ['navLinkService']
+
+listGroup.$inject = [];
+function listGroup() {
+    return {
+        restrict:"EA",
+        link:listGroupLinkfn,
+        transclude:true,
+        controller:"ListGroupCtrl",
+        template:"<div class='list-group'><ng-transclude></ng-transclude></div>"
+    };
+}
+
+function listGroupLinkfn(scope,ele,attrs) {
+}
+
+listGroupItem.$inject = [];
+function listGroupItem(){
+    return {
+        restrict:"EA",
+        transclude:true,
+        require:"^listGroup",
+        link:listGroupItemLinkfn,
+        template:"<a class='list-group-item'><ng-transclude></ng-transclude></a>"
+    };
+}
+
+function listGroupItemLinkfn(scope,ele,attrs,ctrl) {
+}
+
+
+navBar.$inject = ['navLinkService'];
 
 function navBar(navLinkService,$location) {
     return {

@@ -18,3 +18,5 @@ py-bcrypt==0.4
 PyExecJS==1.1.0
 SQLAlchemy==1.0.5
 Werkzeug==0.10.4
+py==1.4.28
+pytest==2.7.1

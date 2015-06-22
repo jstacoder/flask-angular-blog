@@ -10,9 +10,20 @@ app.service('postService',postService)
    .factory('addTag',addTag)
    .factory('loginError',loginError)
    .factory('addComment',addComment)
-   .service('settingService',settingService);
+   .service('settingService',settingService)
+   .constant('API_PREFIX','/api/v1')
+   .factory('getUserPosts',getUserPosts);
+
    //.factory('deleteModal',deleteModal);
 
+
+
+getUserPosts.$inject = ['$http','API_PREFIX','$interpolate'];
+function getUserPosts($http,API_PREFIX,$interpolate) {
+    return function(user_id){
+        return $http.get($interpolate('{{ api_prefix }}/user/{{ user_id }}/posts')({api_prefix:API_PREFIX,user_id:user_id}));
+    }
+}
 
 
 settingService.$inject = ['setting'];

@@ -35,7 +35,15 @@ function authInterceptor($rootScope,$q,$window,authService,getToken) {
     };
 }
 */
-appRun.$inject = ['$rootScope'];
-function appRun($rootScope) {
+appRun.$inject = ['$rootScope','loadUser'];
+function appRun($rootScope,loadUser) {
     $rootScope.isHidden = true;
+    var _curr;
+
+    Object.defineProperty($rootScope,'current',{
+       get: function(){
+            _curr = _curr ? _curr : loadUser();
+            return _curr;
+        }
+    });
 }

@@ -8,7 +8,27 @@ app.controller('HomeCtrl',HomeCtrl)
    .controller('LoginCtrl',LoginCtrl)
    .controller('RegisterCtrl',RegisterCtrl)
    .controller('LogoutCtrl',LogoutCtrl)
-   .controller('SettingsCtrl',SettingsCtrl);
+   .controller('SettingsCtrl',SettingsCtrl)
+   .controller('UserPostCtrl',UserPostCtrl)
+   .controller('ListGroupCtrl',ListGroupCtrl);
+
+
+ListGroupCtrl.$inject = ['$scope','$element','$attrs'];
+function ListGroupCtrl($scope,$element,$attrs) {
+}
+
+
+UserPostCtrl.$inject = ['posts'];
+
+function UserPostCtrl(posts) {
+    var self = this;
+
+    self.posts = posts.data;
+    self.collapsed = {};
+    angular.forEach(self.posts,function(itm){
+        self.collapsed[itm.slug] = true;
+    });
+}
 
 
 SettingsCtrl.$inject = ['settingService','$scope','$timeout'];
@@ -192,11 +212,12 @@ function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag) {
     resetTagForm();
 }
 
-HomeCtrl.$inject = ['$rootScope','$modal'];
+HomeCtrl.$inject = ['$rootScope','$modal','$scope','loadUser'];
 
-function HomeCtrl($rootScope,$modal) {
+function HomeCtrl($rootScope,$modal,$scope,loadUser) {
     var self = this;
     this.test = 'hi';
+    self._curr;
     self.justLoggedIn = self.justLoggedIn || false;
 
     $rootScope.$on('user:login',function(){

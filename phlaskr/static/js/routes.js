@@ -102,6 +102,22 @@ function appRouteConfig($routeProvider,$locationProvider){
             add:false
         }
     })
+    .when('/user/posts',{
+        templateUrl:"/static/partials/user_posts.html",
+        controller:"UserPostCtrl",
+        controllerAs:"ctrl",
+        requiresAuth:true,
+        navOptions:{
+            add:true,
+            text:"My Posts",
+            show:'isAuthenticated'
+        },
+        resolve:{
+            posts:function(getUserPosts,loadUser){
+                return getUserPosts(loadUser().id);
+            }
+        }
+    })
     .otherwise({
         redirectTo:'/'
     });
