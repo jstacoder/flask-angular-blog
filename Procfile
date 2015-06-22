@@ -1,1 +1,1 @@
-web: ../venv/bin/python __init__.py
+web: ./start.sh
