@@ -10,7 +10,7 @@ class BaseConfig(LocalConfig):
 
 
 class ProductionConfig(BaseConfig):
-    DATABASE_URI = os.environ.get('CLEARDB_DATABASE_URL').replace('mysql://','mysql+pymysql://')#'mysql+pymysql://test:test@localhost:3306/test'
+    DATABASE_URI = 'postgres://boayqxuajzoyaz:7dI-lm3A028GIqWwgdY1LsHAl6@ec2-54-227-247-161.compute-1.amazonaws.com:5432/d19d1cqd47ej3e'#'mysql+pymysql://fab:fab@localhost:3306/fabtest'#os.environ.get('CLEARDB_DATABASE_URL').replace('mysql://','mysql+pymysql://')#'mysql+pymysql://test:test@localhost:3306/test'
     DEBUG = False
 
 class TestConfig(BaseConfig):
@@ -25,3 +25,4 @@ configs = dict(
     dev=DevConfig,
     test=TestConfig
 )
+
