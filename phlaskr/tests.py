@@ -86,7 +86,7 @@ class ApiTest(TestCase):
     def test_get_tag(self):
         test_name = 'test'
         tag = Tag.get_new(name=test_name)
-        res = self.client.get('/tag/{}'.format(tag.id))
+        res = self.client.get('/tag/{0}'.format(tag.id))
         _tag = json.loads(res.get_data())
         self.assertEqual(tag.to_json(),_tag)
 
