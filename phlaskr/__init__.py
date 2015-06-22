@@ -24,4 +24,6 @@ if __name__ == "__main__":
     args = [port,application]
     if not os.environ.get("HEROKU"):
         args.insert(0,'0.0.0.0')
+    else:
+        args.insert(0,'')
     run_server(*args)
