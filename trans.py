@@ -6,7 +6,10 @@ def fmt_url(url):
     host =  rest.split('/')[0]
     #print rest
     db = rest.split('/')[-1]
-    return 'mysql -h {} -u"{}" -p"{}" "{}"'.format(host,user,pw,db)
+    return host,user,pw,db
+
+def get_cmd(url):
+    return 'mysql -h {} -u"{}" -p"{}" "{}"'.format(fmt_url(url))
 
 
 def test():
