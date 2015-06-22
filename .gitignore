@@ -2,7 +2,6 @@ phlaskr/static/vendor/*
 node_modules/*
 phlaskr/node_modules/*
 *.pyc
-phlaskr/local_settings*
 *.db
 *egg*
 venv/*
