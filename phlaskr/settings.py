@@ -1,3 +1,4 @@
+import os
 from local_settings import LocalConfig
 
 class BaseConfig(LocalConfig):
@@ -9,7 +10,7 @@ class BaseConfig(LocalConfig):
 
 
 class ProductionConfig(BaseConfig):
-    DATABASE_URI = 'mysql+pymysql://test:test@localhost:3306/test'
+    DATABASE_URI = os.environ.get('CLEARDB_DATABASE_URL')#'mysql+pymysql://test:test@localhost:3306/test'
     DEBUG = False
 
 class TestConfig(BaseConfig):
