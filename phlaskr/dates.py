@@ -1,7 +1,7 @@
 from execjs import get
 from datetime import datetime
 
-rt = get('Node')
+rt = get()
 
 
 ctx = rt.compile('''
