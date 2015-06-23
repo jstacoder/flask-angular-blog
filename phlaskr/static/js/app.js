@@ -35,12 +35,12 @@ function authInterceptor($rootScope,$q,$window,authService,getToken) {
     };
 }
 */
-appRun.$inject = ['$rootScope','loadUser','isAuthenticated'];
+appRun.$inject = ['$rootScope','loadUser'];
 function appRun($rootScope,loadUser) {
     $rootScope.isHidden = true;
-    $rootScope.isAuthenticated = isAuthenticated();
+    $rootScope.isAuthenticated = loadUser() ? true : false;
     $rootScope.$on('$routeChangeSuccess',function(){
-            $rootScope.isAuthenticated = isAuthenticated();
+        $rootScope.isAuthenticated = loadUser() ? true : false;
     });
     var _curr;
 
