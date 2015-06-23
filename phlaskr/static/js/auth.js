@@ -88,11 +88,11 @@ function sendLogin($http,API_LOGIN_URL,$q,redirect) {
     };
 }
 
-appConfig.$inject = ['$httpProvider'];
+/*appConfig.$inject = ['$httpProvider'];
 function appConfig($httpProvider){
     $httpProvider.interceptors.push('newAuthInterceptor');
 }
-
+*/
 appRun.$inject = ['redirect','checkAuth','$rootScope','LOGIN_URL','$location'];
 function appRun(redirect,checkAuth,$rootScope,LOGIN_URL,$location){
     $rootScope.$on("$routeChangeStart",function(e,newRoute,oldRoute){
