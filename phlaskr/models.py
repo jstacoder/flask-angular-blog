@@ -115,7 +115,7 @@ class Post(BaseModel):
     _env = None
     _context = {}
 
-    author_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
+    author_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'),nullable=False)
     author = sa.orm.relationship('AppUser',backref=sa.orm.backref('posts',lazy='dynamic'),uselist=False)
     title = sa.Column(sa.String(255),nullable=False)#,unique=True)
     _content = sa.Column(sa.Text)
@@ -173,8 +173,11 @@ class Post(BaseModel):
             date_added=format_date(self.date_added),
             id=self.id,
             tags=[x.name for x in self.tags.all()],
-            comments=[x.to_json() for x in self.comments.all()]
+            comments=[x.to_json() for x in self.comments.all()],
+            author_id=self.author_id,
+            author=self.author.username
         )
+
 
     def _add_to_ctx(self,key,val):
         self._context[key] = val

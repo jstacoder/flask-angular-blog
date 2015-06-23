@@ -22,7 +22,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         controller:'AddPostCtrl',
         controllerAs:'ctrl',
         resolve:{
-            posts:postResolve,
+            posts:postUserResolve,
             _tags:function(tags){
                 return tags;
             }
@@ -118,6 +118,15 @@ function appRouteConfig($routeProvider,$locationProvider){
             }
         }
     })
+    .when('/admin/:page',{
+        templateUrl:function(params){
+            return '/static/partials/admin-'+params.page+'.html';
+        }
+    })
+    .when('/admin',{
+        templateUrl:"/static/partials/admin/dash.html",
+        controller:"AdminCtrl"
+    })
     .otherwise({
         redirectTo:'/'
     });
@@ -125,4 +134,8 @@ function appRouteConfig($routeProvider,$locationProvider){
 
 function postResolve(postService){
     return postService.query();
+}
+
+function postUserResolve(resourceService,loadUser){
+    return resourceService(loadUser().id).query();
 }

@@ -8,7 +8,34 @@ def start():
     AppUser.metadata.bind = AppUser._engine
 
 def seed():
-    kyle = AppUser.get_new(username='jstacoder',password='test')
+
+    content = {
+            '1':'''
+    Wow Youll never Guess !!!
+
+    OMG!!!!
+            ''',
+            '2':'''
+    Sometimes i think about all kinds of things
+
+    I just never know where to start
+            ''',
+            '3':'''
+    This was soooooo
+    crazy, Im not sure
+    if i beleive it myself.
+            ''',
+            '4':'''
+    
+    Now for some real magixc
+
+
+
+    !!!!!!!
+            '''
+    }
+
+    kyle = AppUser.get_new(username='admin',password='test')
     email = Email(address='kyle@level2designs.com',user_id=kyle.id)
     email.save()
     tag = Tag.get_new(name='tag')
@@ -16,14 +43,14 @@ def seed():
     post = Post.get_new(title='test post2',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
     post = Post.get_new(title='test post3',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
     post = Post.get_new(title='test post4',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
-    joel = AppUser.get_new(username='jr',password='test')
-    email = Email(address='test@test.com',user_id=joel.id)
+    joel = AppUser.get_new(username='jstacoder',password='test')
+    email = Email(address='jstacoder@gmail.com',user_id=joel.id)
     email.save()
     tag = Tag.get_new(name='tags')
-    post = Post.get_new(title='test postwww',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
-    post = Post.get_new(title='test postwww2',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
-    post = Post.get_new(title='test postwww3',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
-    post = Post.get_new(title='test postwww4',content='fsfsfwsd',author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='First test post',content=content['1'],author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='Just my thoughts',content=content['2'],author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='Some crazy stuff',content=content['3'],author_id=joel.id,tags=[tag.id])
+    post = Post.get_new(title='You Wont Beleive This',content=content['4'],author_id=joel.id,tags=[tag.id])
 
 def reset():
     ctx = api.test_request_context()

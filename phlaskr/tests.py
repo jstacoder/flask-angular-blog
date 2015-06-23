@@ -100,3 +100,9 @@ class ApiTest(TestCase):
         res = self.client.post('/public/add',data=dict(email=TEST_EMAIL,password=TEST_PW,username='tester'))
         self.assert200(res)
 
+    def test_get_user_posts(self):
+        user = AppUser.get_all()[0]
+        res = self.client.post('/user/{}/posts'.format(user.id))
+        posts = json.loads(res.get_data())
+        self.assertEqual(posts,map(lambda x: x.to_json(),user.posts.all()))
+

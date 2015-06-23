@@ -10,8 +10,14 @@ app.controller('HomeCtrl',HomeCtrl)
    .controller('LogoutCtrl',LogoutCtrl)
    .controller('SettingsCtrl',SettingsCtrl)
    .controller('UserPostCtrl',UserPostCtrl)
-   .controller('ListGroupCtrl',ListGroupCtrl);
+   .controller('ListGroupCtrl',ListGroupCtrl)
+   .controller('AdminCtrl',AdminCtrl);
 
+
+AdminCtrl.$inject = ['$rootScope'];
+function AdminCtrl($rootScope){
+    $rootScope.isAdmin = true;
+}
 
 ListGroupCtrl.$inject = ['$scope','$element','$attrs'];
 function ListGroupCtrl($scope,$element,$attrs) {
@@ -87,18 +93,18 @@ function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal) {
 
 
     //self.onClick = submitForm;
-    self.onClick = function(){
+    self.onClick = function(user,pw){
           //login({username:'kyle',email:'joe'});
           //redirect('/');
-          submitForm();
+          submitForm(user,pw);
     };
     function resetForm() {
         self.loginUser = {};
         self.loginUser.email = '';
         self.loginUser.pw = '';
     }
-    function submitForm() {
-        sendLogin(self.loginUser.email,self.loginUser.pw)
+    function submitForm(user,pw) {
+        sendLogin(user,pw)
             .then(function(res){
                 console.log(res);
                 res && login(res.data && (res.data.token || res.data)  || res);
@@ -140,9 +146,9 @@ function NavCtrl($scope,$element,$attrs,navLinkService,isAuthenticated) {
     }
 }
 
-AddPostCtrl.$inject = ['posts','postService','addPost','TagService','_tags','addTag'];
+AddPostCtrl.$inject = ['posts','postService','addPost','TagService','_tags','addTag','resourceService','loadUser'];
 
-function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag) {
+function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag,resourceService,loadUser) {
     var self = this;
     self.posts = posts;
     self.tags = _tags;
@@ -171,7 +177,7 @@ function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag) {
     }
 
     function resetPosts(){
-        postService.query(function(result){
+        resourceService(loadUser().id).query(function(result){
             self.posts = result;
         });
     }
@@ -192,6 +198,7 @@ function AddPostCtrl(posts,postService,addPost,TagService,_tags,addTag) {
         post.title = self.newpost.title;
         post.content = self.newpost.content;
         post.use_jinja = self.newpost.use_jinja;
+        post.author_id = loadUser().id;
         post.tags = self.selectedTags.map(function(itm){
             return itm.id;
         });
@@ -232,15 +239,28 @@ function HomeCtrl($rootScope,$modal,$scope,loadUser) {
     }
 }
 
-PostsCtrl.$inject = ['posts','deletePost','isAuthenticated'];
+PostsCtrl.$inject = ['posts','deletePost','isAuthenticated','loadUser','resourceService'];
 
-function PostsCtrl(posts,deletePost,isAuthenticated) {
+function PostsCtrl(posts,deletePost,isAuthenticated,loadUser,resourceService) {
     var self = this;
+    self._current;
     self.posts = posts;
     self.deletePost = function(post){
         deletePost(post);
+        reloadPosts();
     };
     self.isAuthenticated = isAuthenticated;
+    function reloadPosts() {
+        resourceService(loadUser().id).query().$promise.then(function(res){self.posts = res;});
+    }
+    Object.defineProperty(self,'current',{
+        get:function(){
+            if (!self._current) {
+                self._current = loadUser();
+            }
+            return self._current;
+        }
+    });
 }
 
 PostCtrl.$inject = ['post','deletePost','$location','$window','isAuthenticated','$modal','$scope','addComment','loadUser','redirect'];

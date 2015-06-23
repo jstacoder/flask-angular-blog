@@ -22,6 +22,8 @@
     "angular-route": "~1.4.1",
     "bootstrap": "~3.3.5",
     "angular-ui-bootstrap": "~0.13.0",
-    "angular-cookies":"~1.4.1"
+    "angular-cookies": "~1.4.1",
+    "angular-ui-ace": "~0.2.3",
+    "ace": "~1.1.9"
   }
 }

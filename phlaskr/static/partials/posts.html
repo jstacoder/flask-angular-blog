@@ -15,7 +15,7 @@
     <button
             class="btn-xs btn btn-danger"
             ng-click="ctrl.deletePost(post)"
-            ng-if="ctrl.isAuthenticated()"
+            ng-if="ctrl.isAuthenticated()&&ctrl.current.id==post.author_id"
         >Delete</button>
     <hr class=short />
 </div>

@@ -2,10 +2,10 @@ from mongoengine import (
         Document,StringField,IntField,
         DateTimeField,DictField,ListField,
         EmbeddedDocumentField,ReferenceField,
-        EmbeddedDocument,connect
+        EmbeddedDocument,connect,BooleanField
 )
 
-conn = connect(db='new3')
+conn = connect(db='new6')
 
 class Email(EmbeddedDocument):
     address = StringField()
@@ -19,6 +19,7 @@ class User(Document):
     friends = ListField(ReferenceField('self'))
     profile = EmbeddedDocumentField(Profile)
     emails = ListField(EmbeddedDocumentField(Email))
+    is_public = BooleanField()
 
 class Tag(EmbeddedDocument):
     name = StringField()
@@ -41,7 +42,7 @@ def seed_db():
     seed_posts()
 
 def seed_users():
-    return User(name='kyle',emails=[Email(address='kyle@level2designs.com')],profile=Profile(first_name='kyle',last_name='roux')).save()
+    return User(name='joe',emails=[Email(address='kyle@level2designs.com')],profile=Profile(first_name='kyle',last_name='roux')).save()
 
 def seed_posts():
     post = Post(author=seed_users(),title='post1',content='zzzzz',tags=[],comments=[]).save()
@@ -49,10 +50,11 @@ def seed_posts():
 
 
 if __name__ == "__main__":
-    #seed_db()
+    seed_db()
 
-    '''
+    
     print User.objects(name='joe').first().name
+
 
     kyle =\
         User.objects(name='kyle').count() and\
@@ -68,13 +70,15 @@ if __name__ == "__main__":
         print 'adding joe to friends'
         kyle.friends.append(joe)
 
-    kyle.save()
+    post = Post(author=kyle,title='test',content='xcxxxx',tags=[Tag(name='xxx'),Tag(name='ttt'),Tag(name='vvv')])
 
 
     print kyle.name
     print kyle.friends
     print kyle.friends[0].name
-    '''
+    print Post.objects.all()
+    print [t.name for t in Tag.objects.all()]
+    
 
 
     print User.objects

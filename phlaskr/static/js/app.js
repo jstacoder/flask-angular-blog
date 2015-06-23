@@ -1,4 +1,4 @@
-var app = angular.module('app',['app.routes','app.directives','ui.bootstrap','auth.app','ngCookies']);
+var app = angular.module('app',['app.routes','app.directives','ui.bootstrap','auth.app','ngCookies','ui.ace']);
 
 app.run(appRun);
 /*
@@ -35,9 +35,13 @@ function authInterceptor($rootScope,$q,$window,authService,getToken) {
     };
 }
 */
-appRun.$inject = ['$rootScope','loadUser'];
+appRun.$inject = ['$rootScope','loadUser','isAuthenticated'];
 function appRun($rootScope,loadUser) {
     $rootScope.isHidden = true;
+    $rootScope.isAuthenticated = isAuthenticated();
+    $rootScope.$on('$routeChangeSuccess',function(){
+            $rootScope.isAuthenticated = isAuthenticated();
+    });
     var _curr;
 
     Object.defineProperty($rootScope,'current',{

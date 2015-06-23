@@ -6,7 +6,7 @@
 						<strong> Sign in to continue</strong>
 					</div>
 					<div class="panel-body">
-						<form role="form" name=loginForm ng-submit="ctrl.onClick()">
+						<form role="form" name=loginForm ng-submit="ctrl.onClick(loginForm.loginname.$viewValue,loginForm.password.$viewValue)">
 							<fieldset>
 								<div class="row">
 									<div class="center-block">

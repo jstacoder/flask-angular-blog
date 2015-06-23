@@ -59,6 +59,12 @@ class PostListView(views.MethodView):
         if user_id is not None:
             return json_response([x.to_json() for x in User.get_by_id(user_id).posts]),200
 
+    def post(self,user_id=None):
+        user_id = user_id or (g.get('user') and getattr(g.get('user'),'id') or False)
+        if user_id is not None:
+            return json_response([x.to_json() for x in User.get_by_id(user_id).posts]),200
+
+
 class PostView(views.MethodView):
     def get(self,post_id=None):
         if post_id is None:
@@ -106,8 +112,7 @@ class LoginView(views.MethodView):
         open('log3','w').write(json.dumps(data))
         email = Email.query.filter_by(address=data.get('email')).first()
         if email is None:
-            return json_response(['error']),403
-
+            return json_response({'error':'email does not exist'}),404
         else:
             if email.user.check_password(data.get('password')):
                 tkn = g.signer.dumps(email.user.to_json())
@@ -116,7 +121,7 @@ class LoginView(views.MethodView):
                 response.set_cookie('NGAPP_AUTH_TKN',tkn,expires=60*60*24)
                 return response
             else:
-                return json_response(['error']),403
+                return json_response({'error':"incorrect login"}),403
 
 class AddCommentView(views.MethodView):
     def post(self):
@@ -169,7 +174,9 @@ api.add_url_rule('/login','login',view_func=LoginView.as_view('login'))
 api.add_url_rule('/comment/add','add_comment',view_func=AddCommentView.as_view('add_comment'))
 api.add_url_rule('/user/add','add_user',view_func=RegisterUserView.as_view('add_user'))
 api.add_url_rule('/user/<int:user_id>/posts','user_posts',view_func=PostListView.as_view('user_posts'))
+api.add_url_rule('/user/posts','user__posts',view_func=PostListView.as_view('user__posts'))
 api.add_url_rule('/public/add','add_public',view_func=AddPublicUserView.as_view('add_public'))
+
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0',port=8000,debug=True)

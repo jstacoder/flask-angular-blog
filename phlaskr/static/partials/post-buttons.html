@@ -10,7 +10,7 @@
        ng-if="!ctrl.posts"
        >List Posts</a>
     <a
-       ng-if="ctrl.post&&ctrl.post.id&&ctrl.isAuthenticated()"
+       ng-if="ctrl.post&&ctrl.post.id&&ctrl.isAuthenticated()&&ctrl.post.author_id==ctrl.current.id"
        class="btn btn-danger"
        ng-click="ctrl.deletePost(ctrl.post)"
     >Delete Post</a>

@@ -6,7 +6,8 @@
         <link rel="stylesheet" href="/static/css/style.css" />
     </head>
     <body>
-        <nav-bar></nav-bar>
+        <nav-bar is-admin=isAdmin></nav-bar>
+
         <div class=container>
             <div class=row>
                 {% raw %}
@@ -27,16 +28,20 @@
 
             </div>
             <div class=row>
+                <div ng-if="isAuthenticated" ng-include="'/static/partials/sidenav.html'"></div>
                 <ng-view>
+
                 </ng-view>
                 <div ng-include='"/static/partials/footer.html"'></div>
             </div>
         </div>
         <script src="/static/vendor/angular/angular.js"></script>
-        <script src="/static/ui-bootstrap-tpls.js"></script>
+        <script src="/static/vendor/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>
         <script src="/static/vendor/angular-resource/angular-resource.js"></script>
         <script src="/static/vendor/angular-route/angular-route.js"></script>
         <script src="/static/vendor/angular-cookies/angular-cookies.js"></script>
+        <script src="/static/vendor/ace-builds/src/ace.js"></script>
+        <script src="/static/vendor/angular-ui-ace/ui-ace.js"></script>
         <script src="/static/js/controllers.js"></script>
         <script src="/static/js/directives.js"></script>
         <script src="/static/js/routes.js"></script>

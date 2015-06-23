@@ -47,6 +47,11 @@ function navBar(navLinkService,$location) {
 }
 
 function navBarLinkFn(scope,ele,attrs) {
+    if (attrs.isAdmin) {
+        scope.navclass = 'navbar-inverse';
+    }else{
+        scope.navclass = 'navbar-default';
+    }
 }
 
 function currentYear() {

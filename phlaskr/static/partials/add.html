@@ -33,18 +33,41 @@
     .taglist > li:not(.label) {
         color:black;
     }
+    .ace_editor {
+        height:214px;
+        width:458px;
+        border:2px outset grey;
+    }
 </style>
-<div ng-include="'/static/partials/sidenav.html'"></div>
+
 <div class="col-md-offset-1 col-md-5">
     <form name="newPostForm" class=form>
         <div class=form-group>
             <label class=control-label>Title</label>
             <input type=text ng-model=ctrl.newpost.title name=title class=form-control />
         </div>
+        <div class=checkbox>
+            <label>
+                <input type=checkbox ng-model=ctrl.markdown /> Markdown mode
+            </label>
+        </div>
         <div class=form-group>
             <label class=control-label>Content</label>
-            <textarea ng-model=ctrl.newpost.content name=content cols=18 rows=10 class=form-control>
+            <textarea ng-show="!ctrl.markdown" ng-model=ctrl.newpost.content name=content cols=18 rows=10 class=form-control>
             </textarea>
+             <div ng-show="ctrl.markdown" ui-ace="
+                {
+                    useWrapMode : false,
+                    highlightActiveLine:true,
+                    theme:'twilight',
+                    mode: 'markdown',
+                    rendererOptions:{
+                        showLineNumbers:true,
+                        showPrintMargin:true,
+                        showGutter: true,
+                    }
+                }
+            " ng-model=ctrl.newpost.content></div>
         </div>
         <button class="btn btn-default" ng-click=ctrl.onClick()>Submit</button>
     </form>
@@ -76,6 +99,7 @@
             <div class="form-group col-md-6">
                 <label>Add Tag</label>
                 <input class=form-control ng-model="ctrl.newtag.name" />
+                <input type="hidden" value="{{ ctrl.current.id }}" name="user_id" />
                 <div class=row>
                     <div class="col-md-12 tags">
                         <ul class="taglist list-unstyled">

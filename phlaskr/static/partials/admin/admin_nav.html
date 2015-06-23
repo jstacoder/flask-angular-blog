@@ -1,4 +1,4 @@
-<nav class="navbar" ng-class="{'navbar-inverse':isAdmin,'navbar-default':!isAdmin}">
+<nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -8,8 +8,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a ng-if="!isAdmin" class="navbar-brand" href="#">{{ settings.get('SITE_LOGO') }}</a>
-      <a ng-if="isAdmin" class="navbar-brand" href="#">{{ settings.get('ADMIN_SITE_LOGO') || 'Admin' }}</a>
+      <a class="navbar-brand" href="#">{{ settings.get('ADMIN_SITE_LOGO') || 'Admin' }}</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->

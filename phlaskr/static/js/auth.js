@@ -16,13 +16,42 @@ app.factory('logout',logout);
 app.factory('token',token);
 app.factory('register',register);
 /*.factory('authInterceptor',authInterceptor);*/
+app.factory('newAuthInterceptor',newAuthInterceptor);
 app.factory('b64Decode',b64Decode);
 app.factory('gravatarUrl',gravatarUrl);
 app.factory('loadUser',loadUser);
 app.factory('getAvatar',getAvatar);
 app.filter('avatar',avatarFilter);
 app.filter('email',emailFilter);
+app.filter('username',usernameFilter);
+app.service('userCache',userCache);
 
+
+userCache.$inject = ['$cacheFactory'];
+function userCache($cacheFactory){
+    var self = this;
+
+    self.cache = $cacheFactory('userCache');
+    self.put = self.cache.put;
+    self.get = self.cache.get;
+    self.remove = self.cache.remove;
+}
+
+usernameFilter.$inject = ['$http','userCache'];
+function usernameFilter($http) {
+    return function(data){
+        var rtn;
+        if (!userCache.get(data)) {
+            $http.get('/users/'+data+'/name').then(function(res){
+                userCache.put(data,res);
+            });
+            rtn = '';
+        }else{
+            rtn = userCache.get(data);
+        }
+    return rtn;
+    }
+}
 
 emailFilter.$inject = [];
 
@@ -59,11 +88,11 @@ function sendLogin($http,API_LOGIN_URL,$q,redirect) {
     };
 }
 
-/*appConfig.$inject = ['$httpProvider'];*/
-/*function appConfig($httpProvider){
-    $httpProvider.interceptors.push('authInterceptor');
+appConfig.$inject = ['$httpProvider'];
+function appConfig($httpProvider){
+    $httpProvider.interceptors.push('newAuthInterceptor');
 }
-*/
+
 appRun.$inject = ['redirect','checkAuth','$rootScope','LOGIN_URL','$location'];
 function appRun(redirect,checkAuth,$rootScope,LOGIN_URL,$location){
     $rootScope.$on("$routeChangeStart",function(e,newRoute,oldRoute){
@@ -156,6 +185,27 @@ function register($http,$q,API_REG_URL){
     };
 }
 
+newAuthInterceptor.$inject = ['$q','token','redirect','$location','LOGIN_URL','loadUser','$cookies'];
+function newAuthInterceptor($q,token,redirect,$location,LOGIN_URL,loadUser,$cookies){
+    return {
+        request:function(cfg){
+            cfg.headers = cfg.headers || {};
+            if(loadUser()){
+                cfg.headers.Authorization = 'Bearer ' + token();
+                $cookies.put('USER_AUTH',loadUser().id);
+            }
+            return cfg;
+        },
+        responseError:function(response){
+            var def = $q.defer();
+            if((response.status == 404 || response.status === 401 || response.status === 403) && $location.path() !== LOGIN_URL){
+                redirect(LOGIN_URL);
+            }
+            return def.reject(response);
+        }
+    }
+}
+
 authInterceptor.$inject = ['$q','token','redirect','$location','LOGIN_URL'];
 function authInterceptor($q,token,redirect,$location,LOGIN_URL){
     return {
@@ -221,8 +271,8 @@ function avatarFilter(getAvatar) {
     };
 }
 
-loadUser.$inject = ['b64Decode','token','checkAuth'];
-function loadUser(b64Decode,token,checkAuth){
+loadUser.$inject = ['b64Decode','token','checkAuth','userCache'];
+function loadUser(b64Decode,token,checkAuth,userCache){
     return function(delay){
         var user = {
             name:"anonymuous",
@@ -234,6 +284,7 @@ function loadUser(b64Decode,token,checkAuth){
                     var encoded = token() == null ? false : token().split('.')[1];
                     if (encoded) {
                         user = JSON.parse(b64Decode(encoded));
+                        userCache.put(user.id,user.username);
                     }
             }
             return user;

@@ -71,6 +71,10 @@ front.add_url_rule(
     'user_extra',
     view_func = IndexView.as_view('user_extyra')
 )
-
+front.add_url_rule(
+    '/admin',
+    'admin',
+    view_func = IndexView.as_view('admin')
+)
 if __name__ == "__main__":
     front.run('0.0.0.0',8000,debug=True)

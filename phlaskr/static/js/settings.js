@@ -6,7 +6,8 @@ app.constant('settings',{
         ALLOW_COMMENTS:true,
         COMMENTS_NEED_ACCOUNT:false,
         WELCOME_MSG:"Hi There {{ current.username }} welcome back!",
-        DELETE_MSG:"Are You Sure You Want To Delete This?"
+        DELETE_MSG:"Are You Sure You Want To Delete This?",
+        ADMIN_SITE_LOGO:"Admin"
     }
 );
 

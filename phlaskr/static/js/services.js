@@ -12,7 +12,8 @@ app.service('postService',postService)
    .factory('addComment',addComment)
    .service('settingService',settingService)
    .constant('API_PREFIX','/api/v1')
-   .factory('getUserPosts',getUserPosts);
+   .factory('getUserPosts',getUserPosts)
+   .factory('resourceService',resourceService);
 
    //.factory('deleteModal',deleteModal);
 
@@ -166,7 +167,15 @@ function navLinkService($route,$location,$parse,$rootScope){
     }
 }
 
-postService.$inject = ['$resource'];
+resourceService.$inject = ['$resource'];
+
+function resourceService($resource) {
+    return function getResource(user_id){
+        return $resource('/api/v1/user/'+user_id+'/posts');
+    }
+}
+
+postService.$inject = ['$resource','loadUser'];
 
 function postService($resource) {
     return $resource(
@@ -183,6 +192,11 @@ function postService($resource) {
                 params:{post_id:"@id"},
                 method:'POST'
             },
+            userQuery:{
+                url:'/api/v1/user/:user_id/posts',
+                params:{user_id:loadUser().id},
+                method:"POST",
+            }
         }
     );
 }
