@@ -60,7 +60,7 @@ class PostListView(views.MethodView):
             return json_response([x.to_json() for x in User.get_by_id(user_id).posts]),200
 
     def post(self,user_id=None):
-        user_id = user_id or (g.get('user') and getattr(g.get('user'),'id') or )
+        user_id = user_id or (g.get('user') and getattr(g.get('user'),'id') or None)
         if user_id is not None:
             return json_response([x.to_json() for x in User.get_by_id(user_id).posts]),200
 
