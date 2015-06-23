@@ -58,7 +58,7 @@ emailFilter.$inject = [];
 function emailFilter() {
     return function(data,num){
         num = num ? num : 0;
-        return data.emails[num].address
+        return data.emails && data.emails[num].address || '';
     }
 }
 
