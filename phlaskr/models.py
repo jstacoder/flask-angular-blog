@@ -206,14 +206,14 @@ class Email(BaseModel):
             user_id=getattr(self,self.user_id_col)
         )
 
-    @property  
+    @property
     def user_id_col(self):
         return '{0}_user_id'.format(self.user_type)
 
     @property
     def user(self):
         user_types = dict(app=AppUser,public=PublicUser)
-        return user_types[self.user_type].get_by_id(getattr(self,self.user_id_col)) 
+        return user_types[self.user_type].get_by_id(getattr(self,self.user_id_col))
 
 
 class UserProfile(BaseModel):
@@ -312,6 +312,7 @@ class Comment(BaseModel):
             post_id=self.post_id,
             content=self.content,
             author=self.author and self.author.username or '',
+            author_email=self.author and (self.author.email or self.author.emails and self.author.emails[0]).address or '',
             id=self.id,
             children=[x.to_json() for x in self.replys],
             parent=self.parent_comment_id,
@@ -354,5 +355,3 @@ posts_tags =\
         sa.Column('post_id',sa.Integer,sa.ForeignKey('posts.id')),
         sa.Column('tag_id',sa.Integer,sa.ForeignKey('tags.id'))
 )
-
-
