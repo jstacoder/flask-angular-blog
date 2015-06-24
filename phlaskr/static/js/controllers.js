@@ -112,7 +112,7 @@ function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal) {
                 //console.log('success');//,res.data);
                 },function(err){
                     console.log('error',err);
-                    loginError();
+                    //loginError();
                 }
             ).then(function(res){
                 resetForm();
@@ -129,10 +129,34 @@ function LogoutCtrl(logout,redirect){
 
 }
 
-RegisterCtrl.$inject = ['register'];
+RegisterCtrl.$inject = ['register','redirect'];
 
-function RegisterCtrl(register) {
+function RegisterCtrl(register,redirect) {
+    var self = this;
+    
+    
+    self.submitForm = submitForm;
+    
+    function resetForm(){
+        self.newuser = {
+            email:'',
+            password:'',
+            confirm:''
+        };
+    }
 
+    function submitForm(){
+        register({email:self.newuser.email,password:self.newuser.password}).then(
+            function(res){
+                console.log('sucessful regisstration ',res);     
+                resetForm();
+                redirect('/');
+            },
+            function(err){
+                console.log('failed regisstration ',err);                                 
+       });
+    }
+    resetForm();        
 }
 
 NavCtrl.$inject = ['$scope','$element','$attrs','navLinkService','isAuthenticated']
@@ -242,8 +266,8 @@ function HomeCtrl($rootScope,$modal,$scope,loadUser) {
 PostsCtrl.$inject = ['posts','deletePost','isAuthenticated','loadUser','resourceService'];
 
 function PostsCtrl(posts,deletePost,isAuthenticated,loadUser,resourceService) {
-    var self = this;
-    self._current;
+    var self = this,
+        _current;
     self.posts = posts;
     self.deletePost = function(post){
         deletePost(post);
@@ -259,6 +283,9 @@ function PostsCtrl(posts,deletePost,isAuthenticated,loadUser,resourceService) {
                 self._current = loadUser();
             }
             return self._current;
+        },
+        set:function(data){
+            self._current = loadUser();
         }
     });
 }

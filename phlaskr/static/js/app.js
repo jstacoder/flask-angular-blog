@@ -48,6 +48,9 @@ function appRun($rootScope,loadUser) {
        get: function(){
             _curr = _curr ? _curr : loadUser();
             return _curr;
+        },
+        set: function(val){
+            _curr = loadUser();
         }
     });
 }

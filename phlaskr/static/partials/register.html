@@ -6,7 +6,7 @@
 						<strong> Sign up to continue</strong>
 					</div>
 					<div class="panel-body">
-						<form role="form" name=registerForm ng-submit="ctrl.onClick()">							<fieldset>
+						<form role="form" name=registerForm ng-submit="ctrl.submitForm()">							<fieldset>
 								<div class="row">
 									<div class="center-block">
 										<div class="profile-img">
@@ -25,6 +25,8 @@
                                                        class="form-control"
                                                        placeholder="Email Address"                                                       name="loginemail"
                                                        type="text"
+                                                       name="newuser_email"
+                                                       ng-model="ctrl.newuser.email"
                                                        autofocus>
 											</div>
 										</div>
@@ -33,7 +35,14 @@
 												<span class="input-group-addon">
 													<i class="glyphicon glyphicon-lock"></i>
 												</span>
-												<input class="form-control" placeholder="Password" name="password" type="password" value="">
+												<input 
+												       class="form-control" 
+												       placeholder="Password" 
+												       name="password" 
+												       type="password" 
+												       ng-model=ctrl.newuser.password 
+												       value=""
+												>
 											</div>
 										</div>
                                         <div class="form-group">
@@ -47,6 +56,7 @@
                                                        name="confirm"
                                                        type="password"
                                                        value=""
+                                                       
                                                     >
 											</div>
 										</div>

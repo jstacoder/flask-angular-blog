@@ -2,7 +2,7 @@
 
 var app = angular.module('auth.app',['md5.app']);
 
-app.constant('API_REG_URL','/api/v1/register');
+app.constant('API_REG_URL','/api/v1/public/add');
 app.constant('API_LOGIN_URL','/api/v1/login');
 app.constant('LOGIN_URL','/login');
 //app.config(appConfig);
@@ -93,12 +93,16 @@ function appConfig($httpProvider){
     $httpProvider.interceptors.push('newAuthInterceptor');
 }
 */
-appRun.$inject = ['redirect','checkAuth','$rootScope','LOGIN_URL','$location'];
-function appRun(redirect,checkAuth,$rootScope,LOGIN_URL,$location){
+appRun.$inject = ['redirect','checkAuth','$rootScope','LOGIN_URL','$location','$parse'];
+function appRun(redirect,checkAuth,$rootScope,LOGIN_URL,$location,$parse){
     $rootScope.$on("$routeChangeStart",function(e,newRoute,oldRoute){
         var $route = newRoute && newRoute.$$route ? newRoute.$$route : null;
         if($route && $route.requiresAuth && !checkAuth()){
             redirect(LOGIN_URL);
+        }
+        if($route.navOptions && $route.navOptions.show && !$parse($route.navOptions.show)($rootScope)){
+        console.log($route);
+            redirect('/');
         }
         if ($location.path()==LOGIN_URL&&checkAuth()) {
             redirect('/');
@@ -176,10 +180,10 @@ register.$inject = ['$http','$q','API_REG_URL'];
 function register($http,$q,API_REG_URL){
     return function(data){
         var def = $q.defer();
-        if(data.username && data.password && data.email){
+        if(data.password && data.email){
             def.resolve($http.post(API_REG_URL,JSON.stringify(data)));
         }else{
-            def.reject(false);
+            def.reject({reason:'insufficent data',data:data});
         }
         return def.promise;
     };

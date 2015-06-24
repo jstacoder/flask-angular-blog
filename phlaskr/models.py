@@ -189,24 +189,31 @@ class Post(BaseModel):
 class Email(BaseModel):
 
     __table_args__ = (
-        (sa.UniqueConstraint('address','user_id')),
-    )
+        (
+        sa.UniqueConstraint('address','app_user_id'),
+        sa.UniqueConstraint('address','public_user_id'),)
+)
 
     address = sa.Column(sa.String(255))
     user_data_id = sa.Column(sa.Integer,sa.ForeignKey('user_profiles.id'))
-    user_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
-
+    app_user_id = sa.Column(sa.Integer,sa.ForeignKey('app_users.id'))
+    user_type = sa.Column(sa.Enum('public','app',name='user_type'),default='public')
+    public_user_id = sa.Column(sa.Integer,sa.ForeignKey('public_users.id'))
 
     def to_json(self):
         return dict(
             address=self.address,
-            user_id=self.user_id
+            user_id=getattr(self,self.user_id_col)
         )
 
+    @property  
+    def user_id_col(self):
+        return '{}_user_id'.format(self.user_type)
 
     @property
     def user(self):
-        return AppUser.get_by_id(self.user_id)
+        user_types = dict(app=AppUser,public=PublicUser)
+        return user_types[self.user_type].get_by_id(getattr(self,self.user_id_col)) 
 
 
 class UserProfile(BaseModel):
@@ -241,7 +248,7 @@ class AppUser(PasswordHashMixin,BaseModel):
         if 'password' in kwargs:
             self.pwhash = kwargs.pop('password')
         if 'email' in kwargs:
-            email = [Email(address=kwargs.pop('email')).save()]
+            email = [Email(address=kwargs.pop('email'),user_type='app').save()]
             kwargs['emails'] = kwargs.get('emails') and (email + kwargs.pop('emails')) or email
         super(AppUser,self).__init__(*args,**kwargs)
         self.profile = UserProfile(id=self.id).save()
@@ -261,7 +268,8 @@ class AppUser(PasswordHashMixin,BaseModel):
         return dict(
             username=self.username,
             id=self.id,
-            emails=[x.to_json() for x in self.emails.all()]
+            emails=[x.to_json() for x in self.emails.all()],
+            is_public=False
         )
 
 
@@ -314,21 +322,29 @@ class Comment(BaseModel):
 class PublicUser(BaseModel,PasswordHashMixin):
     username = sa.Column(sa.String(255),unique=True,nullable=False)
     email_id = sa.Column(sa.Integer,sa.ForeignKey('emails.id'))
-    email = sa.orm.relation('Email',backref=sa.orm.backref('public_user',uselist=False))
+    email = sa.orm.relation('Email',foreign_keys='[PublicUser.email_id]')
 
     def __init__(self,*args,**kwargs):
+        addr = None
         if 'password' in kwargs:
             self.pwhash = kwargs.pop('password')
         if 'email' in kwargs:
-            email = Email.get_new(address=kwargs.pop('email'))
-            kwargs['email_id'] = email.id
+            addr = kwargs.pop('email')
+            self.email = Email.get_new(address=addr,user_type='public')
+        if not 'username' in kwargs:
+            kwargs['username'] = self.email.address
         super(PublicUser,self).__init__(*args,**kwargs)
+        self.save()
+        self.email.public_user_id = self.id
+        self.email.save()
+
 
     def to_json(self):
         return dict(
             username=self.username,
             id=self.id,
-            email=self.email.address
+            email=self.email.address,
+            is_public=True
         )
 
 posts_tags =\

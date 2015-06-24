@@ -147,14 +147,11 @@ class AddPublicUserView(views.MethodView):
     def post(self):
         data = get_data()
         print data
-        open('log2','w').write(json.dumps(data))
-        if not user_exists(data['username'],True):
-            if not email_exists(data['email']):
-                rtn = json_response(PublicUser.get_new(**data).to_json())
-            else:
-                rtn = json_response(dict(error=True,message="email in use"))
+        open('log2','w').write(json.dumps(data))        
+        if not email_exists(data['email']):
+            rtn = json_response(PublicUser.get_new(**data).to_json())
         else:
-            rtn = json_response(dict(error=True,message="username in use"))
+            rtn = json_response(dict(error=True,message="email in use"))        
         return rtn,200
 
 def user_exists(username,public=False):

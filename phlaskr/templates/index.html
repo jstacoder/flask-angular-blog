@@ -28,7 +28,7 @@
 
             </div>
             <div class=row>
-                <div ng-if="isAuthenticated" ng-include="'/static/partials/sidenav.html'"></div>
+                <div ng-if="isAuthenticated&&!current.is_public" ng-include="'/static/partials/sidenav.html'"></div>
                 <ng-view>
 
                 </ng-view>

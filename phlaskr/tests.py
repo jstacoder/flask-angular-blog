@@ -106,3 +106,8 @@ class ApiTest(TestCase):
         posts = json.loads(res.get_data())
         self.assertEqual(posts,map(lambda x: x.to_json(),user.posts.all()))
 
+    def test_public_user_login(self):
+        self.client.post('/public/add',data=dict(email=TEST_EMAIL,password=TEST_PW,username='tester'))
+        res = self.client.post('/login',data=dict(email=TEST_EMAIL,password=TEST_PW))
+        self.assert200(res)
+

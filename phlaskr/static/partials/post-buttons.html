@@ -2,7 +2,7 @@
     <a
        class="btn btn-success"
        href="/post/add"
-       ng-if="ctrl.isAuthenticated()"
+       ng-if="ctrl.isAuthenticated()&&!current.is_public"
        >Add Post</a>
     <a
        class="btn btn-warning"
@@ -14,5 +14,4 @@
        class="btn btn-danger"
        ng-click="ctrl.deletePost(ctrl.post)"
     >Delete Post</a>
-    <!--<a class="btn btn-info" href="/">Home</a>-->
 </div>

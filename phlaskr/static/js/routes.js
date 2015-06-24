@@ -31,7 +31,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         navOptions:{
             add:true,
             text:"Add Post",
-            show:'isAuthenticated'
+            show:'isAuthenticated&&!current.is_public'
         }
     })
     .when('/posts',{
@@ -55,7 +55,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         navOptions:{
             add:true,
             text:"Settings",
-            show:"isAuthenticated"
+            show:"isAuthenticated&&!current.is_public"
         }
     })
     .when('/post/:post_id',{
@@ -110,7 +110,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         navOptions:{
             add:true,
             text:"My Posts",
-            show:'isAuthenticated'
+            show:'isAuthenticated&&!current.is_public'
         },
         resolve:{
             posts:function(getUserPosts,loadUser){
