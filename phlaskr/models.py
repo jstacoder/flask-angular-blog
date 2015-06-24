@@ -183,7 +183,7 @@ class Post(BaseModel):
         self._context[key] = val
 
     def __repr__(self):
-        return '<Post:{}'.format(self.slug)
+        return '<Post:{0}'.format(self.slug)
 
 
 class Email(BaseModel):
@@ -208,7 +208,7 @@ class Email(BaseModel):
 
     @property  
     def user_id_col(self):
-        return '{}_user_id'.format(self.user_type)
+        return '{0}_user_id'.format(self.user_type)
 
     @property
     def user(self):
