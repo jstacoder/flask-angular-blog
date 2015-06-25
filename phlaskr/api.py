@@ -104,6 +104,16 @@ class DeletePostView(views.MethodView):
             result[1] = 200
         return jsonify(result[0]),result[1]
 
+    def delete(self,post_id):
+        result = [dict(success=False),404]
+        post = Post.get_by_id(post_id)
+        if post is not None:
+            post.delete()
+            result[0]['success'] = True
+            result[1] = 200
+        return jsonify(result[0]),result[1]
+
+
 
 class LoginView(views.MethodView):
     def post(self):
@@ -147,11 +157,11 @@ class AddPublicUserView(views.MethodView):
     def post(self):
         data = get_data()
         print data
-        open('log2','w').write(json.dumps(data))        
+        open('log2','w').write(json.dumps(data))
         if not email_exists(data['email']):
             rtn = json_response(PublicUser.get_new(**data).to_json())
         else:
-            rtn = json_response(dict(error=True,message="email in use"))        
+            rtn = json_response(dict(error=True,message="email in use"))
         return rtn,200
 
 def user_exists(username,public=False):
@@ -164,6 +174,7 @@ def email_exists(email):
 api.add_url_rule('/post','get_posts',view_func=PostView.as_view('get_posts'))
 api.add_url_rule('/post/<int:post_id>','get_post',view_func=PostView.as_view('get_post'))
 api.add_url_rule('/post/delete/<int:post_id>','delete_post',view_func=DeletePostView.as_view('delete_post'))
+api.add_url_rule('/post/<int:post_id>','int_delete_post',view_func=DeletePostView.as_view('int_delete_post'))
 api.add_url_rule('/tag','get_tags',view_func=TagView.as_view('get_tags'))
 api.add_url_rule('/tag/<int:tag_id>','get_tag',view_func=TagView.as_view('get_tag'))
 api.add_url_rule('/tag/add','add_tag',view_func=AddTagView.as_view('add_tag'))

@@ -100,7 +100,7 @@ function appRun(redirect,checkAuth,$rootScope,LOGIN_URL,$location,$parse){
         if($route && $route.requiresAuth && !checkAuth()){
             redirect(LOGIN_URL);
         }
-        if($route.navOptions && $route.navOptions.show && !$parse($route.navOptions.show)($rootScope)){
+        if($route && $route.navOptions && $route.navOptions.show && !$parse($route.navOptions.show)($rootScope)){
         console.log($route);
             redirect('/');
         }

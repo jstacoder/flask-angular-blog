@@ -17,8 +17,6 @@ app.service('postService',postService)
 
    //.factory('deleteModal',deleteModal);
 
-
-
 getUserPosts.$inject = ['$http','API_PREFIX','$interpolate'];
 function getUserPosts($http,API_PREFIX,$interpolate) {
     return function(user_id){
@@ -98,8 +96,8 @@ function navLinkService($route,$location,$parse,$rootScope){
             }
         });
     });
-    $rootScope.$on('user:login',function(publicUser){
-        console.log(publicUser ? 'public user logging in' : 'logging in');
+    $rootScope.$on('user:login',function($event,publicUser){
+        console.log(publicUser,publicUser ? 'public user logging in' : 'logging in');
         angular.forEach(self.getLinks(),function(itm){
             if(!publicUser&&itm.requiresAuth){
                 itm.show = true;
@@ -136,7 +134,6 @@ function navLinkService($route,$location,$parse,$rootScope){
     function loadLinks() {
         if (!loaded) {
             loaded = true
-
             angular.forEach(
                 Object.keys(
                     $route.routes
@@ -146,10 +143,8 @@ function navLinkService($route,$location,$parse,$rootScope){
                     }
                     return false;
                 }),function(itm){
-                    console.log(itm);
                     var key = itm,
-                        $injector = angular.bootstrap(document.createElement('body'),['app']),
-                        route = $route.routes[key],
+                        $injector = angular.bootstrap(document.createElement('body'),['app']),                        route = $route.routes[key],
                         linkData = route.navOptions && route.navOptions.add ? {
                             href:key,
                             text:route.navOptions.text,
@@ -157,8 +152,6 @@ function navLinkService($route,$location,$parse,$rootScope){
                                 $parse(route.navOptions.show)($rootScope,{show:route.navOptions.show}),
                             requiresAuth:route.requiresAuth
                         } : {};
-                    console.log(route);
-                    console.log(linkData);
                     addLink(linkData);
                 }
             );
@@ -170,7 +163,13 @@ resourceService.$inject = ['$resource'];
 
 function resourceService($resource) {
     return function getResource(user_id){
-        return $resource('/api/v1/user/'+user_id+'/posts');
+        return $resource('/api/v1/user/'+user_id+'/posts',{},{
+            delete:{
+                url:'/api/v1/post/delete/:post_id',
+                params:{post_id:"@id"},
+                method:'POST'
+            }
+        });
     }
 }
 
@@ -186,7 +185,7 @@ function postService($resource) {
             query:{
                 isArray:true
             },
-            delete:{
+            $delete:{
                 url:'/api/v1/post/delete/:post_id',
                 params:{post_id:"@id"},
                 method:'POST'
@@ -218,9 +217,9 @@ function addPost(posts) {
 }
 
 
-deletePost.$inject = ['posts','$modal','$location','setting'];
+deletePost.$inject = ['posts','$modal','$location','setting','$window','$rootScope'];
 
-function deletePost(posts,$modal,$location,setting) {
+function deletePost(posts,$modal,$location,setting,$window,$rootScope) {
     return function(post,redirectTo){
         $modal.open({
            templateUrl:"/static/partials/modal.html",
@@ -229,11 +228,21 @@ function deletePost(posts,$modal,$location,setting) {
                 $scope.content = setting.get('DELETE_MSG');
            }
         }).result.then(function(res){
-                       console.log(res);
-                       var idx = posts.indexOf(post);
-                       post.$delete({post_id:post.id});
-                       posts.splice(idx,1);
-                       redirectTo ? $location.path(redirectTo).replace() : false;
+                       console.log('deleting ',res);
+                       var func = $rootScope.$$phase ? function(){
+                                    var idx = posts.indexOf(post);
+                                    post.$delete({post_id:post.id});
+                                    posts.splice(idx,1);
+                                    redirectTo ? $location.path(redirectTo).replace() : false;//$window.location.reload();
+                       } : function(){
+                            $rootScope.$apply(function(){
+                                    var idx = posts.indexOf(post);
+                                    post.$delete({post_id:post.id});
+                                    posts.splice(idx,1);
+                                    redirectTo ? $location.path(redirectTo).replace() : false;//$window.location.reload();
+                                });
+                       };
+                       func();
         });
 
 
