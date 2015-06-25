@@ -312,7 +312,7 @@ class Comment(BaseModel):
             post_id=self.post_id,
             content=self.content,
             author=self.author and self.author.username or '',
-            author_email=self.author and (self.author.email or self.author.emails and self.author.emails[0]).address or '',
+            author_email=self.author and ((hasattr(self.author,'email') and self.author.email) or hasattr(self.author,'emails') and self.author.emails[0]).address or '',
             id=self.id,
             children=[x.to_json() for x in self.replys],
             parent=self.parent_comment_id,
