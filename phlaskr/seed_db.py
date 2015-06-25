@@ -36,7 +36,7 @@ def seed():
     }
 
     kyle = AppUser.get_new(username='admin',password='test')
-    email = Email(address='kyle@level2designs.com',app_user_id=kyle.id,user_type='app')
+    email = Email(address='test@test.com',app_user_id=kyle.id,user_type='app')
     email.save()
     tag = Tag.get_new(name='tag')
     post = Post.get_new(title='test post',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
@@ -44,7 +44,7 @@ def seed():
     post = Post.get_new(title='test post3',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
     post = Post.get_new(title='test post4',content='fsfsfwsd',author_id=kyle.id,tags=[tag.id])
     joel = AppUser.get_new(username='jstacoder',password='test')
-    email = Email(address='jstacoder@gmail.com',app_user_id=joel.id,user_type='app')
+    email = Email(address='jstacoder@test.com',app_user_id=joel.id,user_type='app')
     email.save()
     tag = Tag.get_new(name='tags')
     post = Post.get_new(title='First test post',content=content['1'],author_id=joel.id,tags=[tag.id])
