@@ -149,6 +149,7 @@ body,html{
       float: left;
       margin-bottom: 0px;
       margin-top:-20px;
+      margin-right:5%;
     }
 
     nav.sidebar li {
@@ -156,7 +157,8 @@ body,html{
     }
 
     nav.sidebar:hover{
-      margin-left: -26.3em;
+      margin-left: -3em;
+      margin-right: -14em;
     }
 
     .forAnimate{
@@ -169,6 +171,9 @@ body,html{
     .main{
       width: calc(100% - 200px);
       margin-left: 200px;
+    }
+    nav.sidebar:hover{
+      margin-left: -26.3em;
     }
 
     nav.sidebar{
@@ -206,3 +211,5 @@ td > .input-group-sm {
 li > a {
     cursor:pointer;
 }
+
+
