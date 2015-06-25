@@ -11,7 +11,8 @@ app.controller('HomeCtrl',HomeCtrl)
    .controller('SettingsCtrl',SettingsCtrl)
    .controller('UserPostCtrl',UserPostCtrl)
    .controller('ListGroupCtrl',ListGroupCtrl)
-   .controller('AdminCtrl',AdminCtrl);
+   .controller('AdminCtrl',AdminCtrl)
+   .controller('MsgModalCtrl',MsgModalCtrl);
 
 
 AdminCtrl.$inject = ['$rootScope'];
@@ -290,6 +291,13 @@ function PostsCtrl(posts,deletePost,isAuthenticated,loadUser,resourceService) {
     });
 }
 
+MsgModalCtrl.$inject = ['$scope','msg','confirm','title'];
+function MsgModalCtrl($scope,msg,confirm,title){
+    $scope.msg = msg;
+    $scope.title = title;
+    $scope.confirm = confirm;
+}
+
 PostCtrl.$inject = ['post','deletePost','$location','$window','isAuthenticated','$modal','$scope','addComment','loadUser','redirect'];
 
 function PostCtrl(post,deletePost,$location,$window,isAuthenticated,$modal,$scope,addComment,loadUser,redirect) {
@@ -316,7 +324,26 @@ function PostCtrl(post,deletePost,$location,$window,isAuthenticated,$modal,$scop
     }
     function insertComment(comment) {
         if (!isAuthenticated()) {
-            redirect('/login');
+            $modal.open({
+                templateUrl:"/static/partials/msg-modal.html",
+                $scope:$scope.$new(),
+                controller:'MsgModalCtrl',
+                resolve:{
+                    title:function(){
+                        return 'Error';
+                    },
+                    msg:function(){
+                        return 'You need to login first to comment on an article';
+                    },
+                    confirm:function(){
+                        return true;
+                    }
+                }
+            }).result.then(function(res){
+                redirect('/login');                
+            },function(err){
+                console.log(err);
+            });
         }
         if (comment.parent) {
             var done = false;

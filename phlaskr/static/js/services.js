@@ -98,16 +98,15 @@ function navLinkService($route,$location,$parse,$rootScope){
             }
         });
     });
-    $rootScope.$on('user:login',function(){
-        console.log('logging in');
+    $rootScope.$on('user:login',function(publicUser){
+        console.log(publicUser ? 'public user logging in' : 'logging in');
         angular.forEach(self.getLinks(),function(itm){
-            if(itm.requiresAuth){
+            if(!publicUser&&itm.requiresAuth){
                 itm.show = true;
             }
         });
     });
     $rootScope.$on('$routeChangeStart',function(event,newroute,oldroute){
-
         loadLinks();
     });
     var self = this,

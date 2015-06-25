@@ -6,34 +6,21 @@
         <link rel="stylesheet" href="/static/css/style.css" />
     </head>
     <body>
-        <nav-bar is-admin=isAdmin></nav-bar>
-
+        <nav-bar is-admin=isAdmin>
+        </nav-bar>
         <div class=container>
+            <div ng-cloak ng-include='"/static/partials/alert.html"'></div>
             <div class=row>
-                {% raw %}
-                  <alert
-                         ng-repeat="alert in alerts"
-                         type="{{alert.type}}"
-                         close="closeAlert($index)"
-                         >{{alert.msg}}
-                  </alert>
-                  <div class="col-md-offset-4 col-md-4">
-                    <alert
-                           type="danger"
-                           collapse="isHidden"
-                           close="isHidden=true">Incorrect Login or Password
-                    </alert>
-                  </div>
-                    {% endraw %}
-
+                <div
+                     ng-if="isAuthenticated&&!current.is_public"
+                     ng-include="'/static/partials/sidenav.html'"
+                ></div>
+                <div class="main col-md-12">
+                    <ng-view>
+                    </ng-view>
+                </div>
             </div>
-            <div class=row>
-                <div ng-if="isAuthenticated&&!current.is_public" ng-include="'/static/partials/sidenav.html'"></div>
-                <ng-view>
-
-                </ng-view>
-                <div ng-include='"/static/partials/footer.html"'></div>
-            </div>
+            <div ng-include='"/static/partials/footer.html"'></div>
         </div>
         <script src="/static/vendor/angular/angular.js"></script>
         <script src="/static/ui-bootstrap-tpls.js"></script>

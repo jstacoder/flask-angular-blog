@@ -1,6 +1,6 @@
 <h2>Home</h2>
 
 
-<div ng-if="current.emails">
+<div ng-if="isAuthenticated&&current.emails">
     <img ng-src="{{ current | email:0 | avatar:200 }}" />
 </div>

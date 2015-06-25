@@ -32,6 +32,9 @@
       </form>
 
       <ul class="nav navbar-nav navbar-right">
+        <li ng-show="isAdmin">
+          <a ng-click="isAdmin=false" href="#">Back To Site</a>
+        </li>
         <li ng-show="!checkAuth()&&!checkLink('/login')">
           <a href="/login">Login</a>
         </li>
@@ -39,7 +42,27 @@
           <a href="/register">Register</a>
         </li>
         <li ng-show="!!checkAuth()">
-          <a href="/logout">Logout</a>
+          <p class="navbar-text">Signed in as <a href="#" class="navbar-link">{{ current.username }}</a></p>
+        </li>
+        <li ng-show="!!checkAuth()" class=dropdown dropdown>
+          <a
+             href="#"
+             class="dropdown-toggle"
+             data-toggle="dropdown"
+             role="button"
+             aria-haspopup="true"
+             aria-expanded="false"
+             dropdown-toggle
+             >Account <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Profile</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Help</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
         </li>
         <!--
         <li class="dropdown">

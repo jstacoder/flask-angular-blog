@@ -151,8 +151,8 @@ function login($window,redirect,$rootScope,$modal,loadUser){
             tkn = tkn.token;
         }
         $window.sessionStorage.setItem('token',JSON.stringify(tkn));
-        $rootScope.$broadcast('user:login');
-        $rootScope.$emit('user:login');
+        $rootScope.$broadcast('user:login',loadUser().is_public);
+        $rootScope.$emit('user:login',loadUser().is_public);
         $rootScope.current  = {username:loadUser().username};
         $modal.open({templateUrl:"/static/partials/welcome-modal.html",$scope:$rootScope.$new(),size:'sm'});
         redirect('/');
