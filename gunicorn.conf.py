@@ -185,7 +185,7 @@ def post_fork(server, worker):
 
 def pre_fork(server, worker):
     import os
-    os.system('touch /tmp/app-initalized')
+    os.system('touch /tmp/app-initialized')
     print os.listdir('/tmp')
 
 def pre_exec(server):
