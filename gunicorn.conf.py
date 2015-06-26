@@ -18,7 +18,7 @@
 #       range.
 #
 
-bind = '/tmp/nginx.socket'
+bind = 'unix:/tmp/nginx.socket'
 backlog = 2048
 
 #
