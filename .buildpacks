@@ -1,4 +1,6 @@
 https://github.com/heroku/heroku-buildpack-nodejs
 https://github.com/ejholmes/heroku-buildpack-bower
 #https://github.com/heroku/heroku-buildpack-python
-https://github.com/agiliq/nginx-python-buildpack
+#https://github.com/agiliq/nginx-python-buildpack
+https://github.com/jstacoder/nginx-python-buildpack
+#root@localhost:/root/projects/github/python-nginx-buildpack/bin/compile
