@@ -1,16 +1,13 @@
 from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort,g,current_app
-from models import Comment,Post,Tag,Email,AppUser as User,PublicUser
+from ..models import Comment,Post,Tag,Email,AppUser as User,PublicUser
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
-from app_factory import get_app
-from cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
+from ..app_factory import get_app
+from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
 
 api = get_app('api',is_bp=True,static_folder='static',url_prefix='/api/v1')
 
 check_cache = api.before_request(check_cache)
 cache_response = api.after_request(cache_response)
-
-
-#api.config['DATABASE_URI'] = 'sqlite:///test3.db'
 
 
 def get_data():

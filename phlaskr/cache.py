@@ -32,29 +32,39 @@ cache = Redis(
 )
 
 def cache_response(res):
-    print 'checking cached'
-    cached = g.get('cached')
-    if cached:
-        print 'We just pulled from the cache, so we shouldnt recache this'
-        return res
-    print 'We just loaded this response, so were going to cache it'
-    key = _key(new('md5',request.path).hexdigest())
-    cache.set(key,res.get_data(),ex=60*5)
-    print 'caching result with key - {}'.format(key)
+    if  request.method == 'GET':
+        print 'checking cached'
+        cached = g.get('cached')
+        if cached:
+            print 'We just pulled from the cache, so we shouldnt recache this'
+            return res
+        print 'We just loaded this response, so were going to cache it'
+        key = _key(new('md5',request.path).hexdigest())
+        res.direct_passthrough = False
+        cache.set(key,res.get_data(),ex=60*2)
+        print 'caching result with key - {}'.format(key)
     return res
+    
 
 
 def check_cache():
-    print 'unsetting cached'
-    g.cached = False
-    print 'checking cache'
-    key = _key(new('md5',request.path).hexdigest())
-    result = cache.get(key)
-    if result:
-        print 'found {} in cache'.format(key)
-        g.cached = True
-        print 'setting cached'
-        return make_response(result)
+    if  request.method == 'GET':
+        print 'unsetting cached'
+        g.cached = False
+        print 'checking cache'
+        key = _key(new('md5',request.path).hexdigest())
+        result = cache.get(key)
+        if result:
+            print 'found {} in cache'.format(key)
+            g.cached = True
+            print 'setting cached'
+            res = make_response(result)
+            try:
+                json.loads(result)
+                res.headers['Content-Type'] = 'application/json'
+            except:
+                pass
+            return res
 
 
 

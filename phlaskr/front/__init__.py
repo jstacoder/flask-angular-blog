@@ -1,20 +1,32 @@
 import os
+from os import path as op
 from flask import Flask,render_template,views,g,request,send_file,g,current_app
-from models import AppUser
-from app_factory import get_app
+from ..models import AppUser
+from ..app_factory import get_app
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
-from cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
+from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
 
 front  = get_app('front',is_bp=True,static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)),url_prefix='')
 
 check_cache = front.before_request(check_cache)
 cache_response = front.after_request(cache_response)
 
-#front.config.DATABASE_URI = 'sqlite:///test3.db'
-
 class IndexView(views.MethodView):
     def get(self,post_id=None,extra=None):
-        return render_template('index.html')
+        return send_file(
+                    op.realpath(
+                        op.join(
+                            op.dirname(
+                                op.dirname(
+                                    __file__
+                                )
+                            ),
+                            'templates',
+                            'index.html'
+                        )
+                    )
+                )
+        
 
 class TestSpeedView(views.MethodView):
     def get(self):
