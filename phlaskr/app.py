@@ -11,7 +11,7 @@ import os
 #application.register_blueprint(api)
 
 runserver = lambda host,port,app: run_simple(host,port,app,use_debugger=True,use_reloader=True)
-if os.environ.get('TESTING'):
+if not os.environ.get('TESTING'):
     from gevent.pywsgi import WSGIServer
     run_server = lambda host,port,app: WSGIServer((host,port),app).serve_forever()
 
