@@ -13,9 +13,33 @@ app.service('postService',postService)
    .service('settingService',settingService)
    .constant('API_PREFIX','/api/v1')
    .factory('getUserPosts',getUserPosts)
-   .factory('resourceService',resourceService);
+   .factory('resourceService',resourceService)
+   .factory('msgModal',msgModal);
 
    //.factory('deleteModal',deleteModal);
+   //
+msgModal.$inject = ['$modal'];
+
+function msgModal($modal){
+    return function(title,msg,addBtns){
+        return $modal.open({
+            templateUrl:'/static/partials/msg-modal.html',
+            controller:'MsgModalCtrl',
+            controllerAs:'ctrl',
+            resolve:{
+                title:function(){
+                    return title;
+                },
+                msg:function(){
+                    return msg;
+                },
+                confirm:function(){
+                    return addBtns;
+                }
+            }
+        }).result;
+    };
+}
 
 getUserPosts.$inject = ['$http','API_PREFIX','$interpolate'];
 function getUserPosts($http,API_PREFIX,$interpolate) {

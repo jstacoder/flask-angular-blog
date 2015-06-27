@@ -8,7 +8,7 @@ from flask import request,make_response,g
 
 type_key = lambda key: 'content_type:{0}'.format(key)
 
-_key = lambda x: 'FLASKNGBLOG:{0}'.format(x)
+_key = lambda x: 'FLASKNGBLOG2:{0}'.format(x)
 
 def convert_uri_to_args(uri):
     if uri is None:
@@ -41,7 +41,7 @@ def cache_response(res):
         print 'We just loaded this response, so were going to cache it'
         key = _key(new('md5',request.path).hexdigest())
         res.direct_passthrough = False
-        cache.set(key,res.get_data(),ex=60*2)
+        cache.set(key,res.get_data(),ex=60)
         print 'caching result with key - {0}'.format(key)
     return res
     

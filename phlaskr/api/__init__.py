@@ -11,6 +11,7 @@ cache_response = api.after_request(cache_response)
 
 
 def get_data():
+    print 'here'
     return json.loads(request.data) if request.data else dict(request.form.items())
 
 
@@ -165,7 +166,7 @@ class AddPublicUserView(views.MethodView):
         data = get_data()
         print data
         open('log2','w').write(json.dumps(data))
-        if not email_exists(data['email']):
+        if not email_exists(data.get('email')):
             rtn = json_response(PublicUser.get_new(**data).to_json())
         else:
             rtn = json_response(dict(error=True,message="email in use"))
@@ -176,7 +177,7 @@ def user_exists(username,public=False):
     return user is not None
 
 def email_exists(email):
-    return Email.query.filter_by(address=email).first() is not None
+    return Email.query.filter(Email.address==email).first() is not None
 
 api.add_url_rule('/post','get_posts',view_func=PostView.as_view('get_posts'))
 api.add_url_rule('/post/<int:post_id>','get_post',view_func=PostView.as_view('get_post'))

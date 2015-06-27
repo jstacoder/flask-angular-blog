@@ -130,9 +130,9 @@ function LogoutCtrl(logout,redirect){
 
 }
 
-RegisterCtrl.$inject = ['register','redirect'];
+RegisterCtrl.$inject = ['register','redirect','msgModal'];
 
-function RegisterCtrl(register,redirect) {
+function RegisterCtrl(register,redirect,msgModal) {
     var self = this;
     
     
@@ -149,6 +149,10 @@ function RegisterCtrl(register,redirect) {
     function submitForm(){
         register({email:self.newuser.email,password:self.newuser.password}).then(
             function(res){
+                msgModal('Welcome','Thank you for signing up!, please take a moment to login',true)
+                    .then(function(res){
+                        
+                    });
                 console.log('sucessful regisstration ',res);     
                 resetForm();
                 redirect('/');
