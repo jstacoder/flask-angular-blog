@@ -1,4 +1,8 @@
 # Sample Gunicorn configuration file.
+import os
+
+not_heroku = os.environ.get('NOT_HEROKU')
+
 
 #
 # Server socket
@@ -18,7 +22,7 @@
 #       range.
 #
 
-bind = 'unix:/tmp/nginx.socket'
+bind = 'unix:/tmp/nginx-phlaskr.sock' if not_heroku else 'unix:/tmp/nginx.socket' 
 backlog = 2048
 
 #
@@ -69,7 +73,7 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 4
+workers = 1 if not_heroku else 4
 worker_class = 'gevent'
 worker_connections = 1500
 timeout = 15

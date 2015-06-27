@@ -1,16 +1,24 @@
 import os
-from flask import Flask,render_template,views,g,request
+from flask import Flask,render_template,views,g,request,send_file,g,current_app
 from models import AppUser
 from app_factory import get_app
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
+from cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
 
-front  = get_app('front',static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)))
+front  = get_app('front',is_bp=True,static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)),url_prefix='')
+
+check_cache = front.before_request(check_cache)
+cache_response = front.after_request(cache_response)
 
 #front.config.DATABASE_URI = 'sqlite:///test3.db'
 
 class IndexView(views.MethodView):
     def get(self,post_id=None,extra=None):
         return render_template('index.html')
+
+class TestSpeedView(views.MethodView):
+    def get(self):
+        return send_file('./templates/index.html')
 
 def load_user(tkn):
     try:
@@ -21,7 +29,7 @@ def load_user(tkn):
 
 @front.before_request
 def check_auth():
-    g.signer = signer(front.config['SECRET_KEY'],60*60*24*7)
+    g.signer = signer(current_app.config['SECRET_KEY'],60*60*24*7)
     if request.cookies.get('NGAPP_AUTH_TKN'):
         g.user = load_user(request.cookies.get('NGAPP_AUTH_TKN'))
         print g.user
@@ -30,6 +38,11 @@ front.add_url_rule(
     '/',
     'index',
     view_func = IndexView.as_view('index')
+)
+front.add_url_rule(
+        '/speed',
+        'speed',
+        view_func = TestSpeedView.as_view('speed')
 )
 front.add_url_rule(
     '/post/<post_id>',

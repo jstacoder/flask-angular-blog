@@ -1,13 +1,17 @@
-from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort
+from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort,g,current_app
 from models import Comment,Post,Tag,Email,AppUser as User,PublicUser
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from app_factory import get_app
+from cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
 
+api = get_app('api',is_bp=True,static_folder='static',url_prefix='/api/v1')
 
-api = get_app('api',static_folder='static')
+check_cache = api.before_request(check_cache)
+cache_response = api.after_request(cache_response)
+
 
 #api.config['DATABASE_URI'] = 'sqlite:///test3.db'
-api.config['SECRET_KEY'] = 'xxx'
+
 
 def get_data():
     return json.loads(request.data) if request.data else dict(request.form.items())
@@ -15,9 +19,9 @@ def get_data():
 
 def json_response(content):
     res = make_response(json.dumps(content))
+    res.set_cookie('SECRET_KEY',current_app.config.get('SECRET_KEY'))
     res.headers['Content-Type'] = 'application/json'
     return res
-
 
 def load_user(tkn):
     try:
@@ -28,10 +32,16 @@ def load_user(tkn):
 
 @api.before_request
 def check_auth():
-    g.signer = signer(api.config['SECRET_KEY'],60*60*24*7)
+    g.signer = signer(current_app.config['SECRET_KEY'],60*60*24*7)
     if request.cookies.get('NGAPP_AUTH_TKN'):
         g.user = load_user(request.cookies.get('NGAPP_AUTH_TKN'))
         print g.user
+
+
+@api.before_request
+def cache_response():
+    print request.path
+    print get_key(request.path)
 
 
 class TagView(views.MethodView):

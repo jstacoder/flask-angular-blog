@@ -8,7 +8,7 @@ import sqlalchemy as sa
 from dates import format_date
 
 
-_engine = lambda DB_URI,echo=True: sa.create_engine(DB_URI,echo=echo)
+_engine = lambda DB_URI,echo=False: sa.create_engine(DB_URI,echo=echo)
 
 def get_base():
     base = declarative_base()
