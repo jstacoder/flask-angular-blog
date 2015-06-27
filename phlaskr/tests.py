@@ -1,11 +1,18 @@
-from flask_testing import TestCase,TwillTestCase
-from models import AppUser,Post,Tag
 import os
+import sys
+venv = os.path.realpath(os.path.join(os.path.dirname(os.path.dirname(__file__)),'venv','lib','python2.7','site-packages'))
+print venv
+print os.listdir(venv)
+sys.path.insert(0,venv)
+import flask
+print sys.modules['flask']
+from flask_testing import TestCase,Twill
+import unittest
+from models import AppUser,Post,Tag
 from seed_db import reset
 import json
 from api import api
 from front import front
-
 
 TEST_EMAIL = 'test@t.com'
 TEST_USERNAME = 'hank'
@@ -13,11 +20,12 @@ TEST_PW = 'cccc'
 
 os.environ['APP_CONFIG'] = 'test'
 
-print api.config.get('DATABASE_URI')
 class ApiTest(TestCase):
 
     def setUp(self):
         reset()
+        #self.twill = Twill(self.app)
+        AppUser.engine.echo = False
 
     def tearDown(self):
         AppUser.metadata.drop_all()
@@ -26,6 +34,11 @@ class ApiTest(TestCase):
     def create_app(self):
         #api.test_request_context().push()
         return api
+
+    #def test_home(self):
+    #    with self.twill as t:
+    #        t.browser.go('/')
+    #        print t.url('/')
 
     def test_get_posts(self):
         res = self.client.get('/post')
@@ -111,3 +124,11 @@ class ApiTest(TestCase):
         res = self.client.post('/login',data=dict(email=TEST_EMAIL,password=TEST_PW))
         self.assert200(res)
 
+
+def main():
+    """Runs the unit tests without coverage."""
+    tests = unittest.TestLoader().discover('.')
+    unittest.TextTestRunner(verbosity=2).run(tests)
+
+if __name__ == "__main__":
+    main()
