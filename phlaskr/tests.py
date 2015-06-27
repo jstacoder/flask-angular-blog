@@ -11,6 +11,7 @@ import json
 from app_factory import get_app
 from api import api
 from front import front
+from types import MethodType
 
 if int(getattr(__import__('platform'),'python_version_tuple')()[1]) == 6:
     def assert_in(self,x,y):
