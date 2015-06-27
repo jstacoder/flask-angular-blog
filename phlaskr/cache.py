@@ -84,8 +84,6 @@ alg = 'md5'
 def make_secret_key():
     return new(alg,str(random())).hexdigest()
 
-cache = Redis()
-
 def set_cache(key,val):
     key = get_key(key)
     val = pickle.dumps(val)
