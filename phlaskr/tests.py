@@ -16,7 +16,7 @@ from types import MethodType
 if int(getattr(__import__('platform'),'python_version_tuple')()[1]) == 6:
     def assert_in(self,x,y):
         assert x in y
-    TestCase.assertIn = MethodType(TestCase,TestCase(),assert_in)
+    TestCase.assertIn = MethodType(assert_in,None,TestCase)
 
 TEST_EMAIL = 'test@t.com'
 TEST_USERNAME = 'hank'
