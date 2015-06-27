@@ -24,7 +24,12 @@ def convert_uri_to_args(uri):
         password=pw
     )
 
-cache = Redis(**convert_uri_to_args(os.environ.get('REDISCLOUD_URL')) or {})
+cache = Redis(
+    **convert_uri_to_args(
+                os.environ.get('HEROKU')\
+                and 'redis://rediscloud:hQUeCl0o4Az3pLS2@pub-redis-17658.us-east-1-3.4.ec2.garantiadata.com:17658'
+    ) or {}
+)
 
 def cache_response(res):
     print 'checking cached'
