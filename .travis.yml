@@ -5,6 +5,9 @@ python:
     - "2.7"
     - "pypy"
 
+services:
+    - redis-server
+
 #install deps
 install:
     - "pip install . -q"
