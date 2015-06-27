@@ -1,7 +1,7 @@
 # coding: utf-8
 from sqlalchemy import create_engine
-from models import AppUser,UserProfile,Email,Post,Tag,Comment
-from . import application as api
+from .models import AppUser,UserProfile,Email,Post,Tag,Comment
+from .app import application as api
 
 def start():
     AppUser._engine = create_engine(api.config.get('DATABASE_URI'),echo=True)
