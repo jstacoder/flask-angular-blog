@@ -6,11 +6,25 @@ from random import random
 import os
 from flask import request,make_response,g
 
-cache = Redis(os.environ.get('REDISCLOUD_URL') or '')
-
 type_key = lambda key: 'content_type:{}'.format(key)
 
 _key = lambda x: 'FLASKNGBLOG:{}'.format(x)
+
+def convert_uri_to_args(uri):
+    if uri is None:
+        return False
+    trash,remainder = uri.split('://')
+    login,host_info = remainder.split('@')
+    user,pw = login.split(':')
+    host,port = host_info.split(':')
+    return dict(
+        host=host,
+        port=port,
+        db=0,
+        password=pw
+    )
+
+cache = Redis(**convert_uri_to_args(os.environ.get('REDISCLOUD_URL')) or {})
 
 def cache_response(res):
     print 'checking cached'
