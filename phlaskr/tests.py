@@ -28,7 +28,6 @@ class ApiTest(TestCase):
 
     def setUp(self):
         reset()
-        #self.twill = Twill(self.app)
         AppUser.engine.echo = False
 
     def tearDown(self):
@@ -37,14 +36,30 @@ class ApiTest(TestCase):
 
     def create_app(self):
         return get_app('app',cfg='test',blueprints=dict(api=api,front=front))
-        #api.test_request_context().push()
 
 
-    #def test_home(self):
-    #    with self.twill as t:
-    #        t.browser.go('/')
-    #        print t.url('/')
+    def _add_post(self):
+        return self.client.post('/api/v1/post',data=dict(title='test title',content='klksdlkjsdklj',author_id=1,tags=[]))
 
+    def _add_comment(self,post_data):
+        return self.client.post('/api/v1/comment/add',data=dict(author_id=1,subject='testing',post_id=post_data['id'],content='test'))
+
+    def _get_post(self,post_id):
+        return json.loads(self.client.get('/api/v1/post/{0}'.format(post_id)).get_data())
+
+
+    def test_add_comment(self):
+        post = json.loads(self._add_post().get_data())
+        cmt = self._add_comment(post)
+        self.assertIn('application/json',cmt.content_type)
+        
+    def test_added_comment_exists(self):
+        post = json.loads(self._add_post().get_data())
+        cmt = self._add_comment(post)
+        post = self._get_post(post['id'])
+        self.assertEqual(len(post['comments']),1)
+
+        
     def test_get_posts(self):
         res = self.client.get('/api/v1/post')
         self.assert200(res)

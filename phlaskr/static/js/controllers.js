@@ -149,20 +149,26 @@ function RegisterCtrl(register,redirect,msgModal) {
     function submitForm(){
         register({email:self.newuser.email,password:self.newuser.password}).then(
             function(res){
-                msgModal('Welcome','Thank you for signing up!, please take a moment to login',true)
-                    .then(function(res){
-                        
-                    });
-                console.log('sucessful regisstration ',res);     
-                resetForm();
-                redirect('/');
-            },
-            function(err){
-                console.log('failed regisstration ',err);                                 
-       });
+                if(!res.data.error){
+                    msgModal('Welcome','Thank you for signing up!, please take a moment to login',true)
+                        .then(function(res){
+                            console.log('sucessful registration ',res);     
+                            resetForm();
+                            redirect('/login');
+                        });
+                    }else{
+                        msgModal(res.data.message,'Please Try Again')
+                            .then(function(res){
+                                console.log('failed registration ',err);                                 
+                                resetForm();        
+                            });
+                        }
+            }
+        );
     }
-    resetForm();        
 }
+    
+
 
 NavCtrl.$inject = ['$scope','$element','$attrs','navLinkService','isAuthenticated']
 

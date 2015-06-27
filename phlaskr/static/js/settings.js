@@ -7,14 +7,15 @@ app.constant('settings',{
         COMMENTS_NEED_ACCOUNT:false,
         WELCOME_MSG:"Hi There {{ current.username }} welcome back!",
         DELETE_MSG:"Are You Sure You Want To Delete This?",
-        ADMIN_SITE_LOGO:"Admin"
+        ADMIN_SITE_LOGO:"Admin",
+        HOME_PAGE_POST:true,
+
     }
 );
 
 app.provider('setting',setting);
 
 setting.$inject = ['settings'];
-//setting.$get.$inject = ['$parse,','$scope'];
 function setting(settings) {
 
     var self = this;
@@ -33,7 +34,6 @@ function setting(settings) {
                  $cookies.put(k,v);
              }
              function getSetting(k) {
-                 //return self.settings[k] ? $parse(self.settings[k])($rootScope.$new()) : $parse(settings[k])($rootScope.$new());
                  return $interpolate(svc.getSettings()[k])($rootScope);
              }
              function setup() {
