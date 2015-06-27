@@ -13,9 +13,9 @@ from api import api
 from front import front
 
 if int(getattr(__import__('platform'),'python_version_tuple')()[1]) == 6:
-    def assert_in(x,y):
+    def assert_in(self,x,y):
         assert x in y
-    TestCase.assertIn =  assert_in
+    TestCase.assertIn = MethodType(TestCase,TestCase(),assert_in)
 
 TEST_EMAIL = 'test@t.com'
 TEST_USERNAME = 'hank'
