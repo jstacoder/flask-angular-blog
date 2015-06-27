@@ -16,4 +16,4 @@ install:
 # tests
 script: 
     - "nosetests"
-    - "py.test tests.py"
+    - "HEROKU='1' py.test tests.py"
