@@ -37,28 +37,44 @@ class ApiTest(TestCase):
     def create_app(self):
         return get_app('app',cfg='test',blueprints=dict(api=api,front=front))
 
-
     def _add_post(self):
         return self.client.post('/api/v1/post',data=dict(title='test title',content='klksdlkjsdklj',author_id=1,tags=[]))
 
     def _add_comment(self,post_data):
         return self.client.post('/api/v1/comment/add',data=dict(author_id=1,subject='testing',post_id=post_data['id'],content='test'))
 
+    def _add_comment_reply(self,comment_data):
+        return self.client.post('/api/v1/comment/add',data=dict(author_id=1,subject='testing',post_id=comment_data['post_id'],content='test',parent_comment_id=comment_data['id']))
+
     def _get_post(self,post_id):
         return json.loads(self.client.get('/api/v1/post/{0}'.format(post_id)).get_data())
 
+        
+    def test_added_comment_exists(self):
+        post = json.loads(self._add_post().get_data())
+        cmts = post['comments']
+        cmt = self._add_comment(post)
+        post = self._get_post(post['id'])
+        self.maxDiff = None
+        self.assertEquals(json.loads(cmt.get_data())['id'],post['comments'][0]['id'])
 
     def test_add_comment(self):
         post = json.loads(self._add_post().get_data())
         cmt = self._add_comment(post)
         self.assertIn('application/json',cmt.content_type)
-        
-    def test_added_comment_exists(self):
-        post = json.loads(self._add_post().get_data())
-        cmt = self._add_comment(post)
-        post = self._get_post(post['id'])
-        self.assertEqual(len(post['comments']),1)
 
+    def test_add_comment_reply(self):
+        post = json.loads(self._add_post().get_data())
+        cmt = json.loads(self._add_comment(post).get_data())
+        reply = self._add_comment_reply(cmt)
+        self.assert200(reply)
+
+    def test_add_comment_reply_exists(self):
+        post = json.loads(self._add_post().get_data())
+        cmt = json.loads(self._add_comment(post).get_data())
+        reply = self._add_comment_reply(cmt)
+        post = self._get_post(post['id'])
+        self.assertEquals(len(post['comments'][0]['children']),1)
         
     def test_get_posts(self):
         res = self.client.get('/api/v1/post')

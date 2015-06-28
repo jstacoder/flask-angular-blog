@@ -4,6 +4,7 @@ from app_factory import get_app
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug import run_simple
 from cache import make_secret_key
+from htmlmin.middleware import HTMLMinMiddleware
 import os
 
 
@@ -26,6 +27,7 @@ if not os.environ.get('TESTING'):
 application = get_app('app',blueprints=dict(api=api,front=front))
 
 if __name__ == "__main__":
+    application.wsgi_app = HTMLMinMiddleware(application.wsgi_app)
 
     @application.before_first_request
     def set_secret():

@@ -5,6 +5,7 @@ from ..models import AppUser
 from ..app_factory import get_app
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
+from htmlmin import minify
 
 front  = get_app('front',is_bp=True,static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)),url_prefix='')
 
@@ -12,8 +13,10 @@ check_cache = front.before_request(check_cache)
 cache_response = front.after_request(cache_response)
 
 class IndexView(views.MethodView):
+
+
     def get(self,post_id=None,extra=None):
-        return send_file(
+        rtn = send_file(
                     op.realpath(
                         op.join(
                             op.dirname(
@@ -26,6 +29,9 @@ class IndexView(views.MethodView):
                         )
                     )
                 )
+        rtn.direct_passthrough = False
+        #rtn.data = minify(unicode(rtn.data))
+        return rtn
         
 
 class TestSpeedView(views.MethodView):
