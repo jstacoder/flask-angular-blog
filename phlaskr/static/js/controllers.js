@@ -87,9 +87,9 @@ function SettingsCtrl(settingService,$scope,$timeout) {
     }
 }
 
-LoginCtrl.$inject = ['login','$cookies','sendLogin','redirect','loginError','$modal'];
+LoginCtrl.$inject = ['login','$cookies','sendLogin','redirect','loginError','$modal','msgModal'];
 
-function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal) {
+function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal,msgModal) {
     var self = this;
 
 
@@ -105,7 +105,16 @@ function LoginCtrl(login,$cookies,sendLogin,redirect,loginError,$modal) {
         self.loginUser.pw = '';
     }
     function submitForm(user,pw) {
-        sendLogin(user,pw)
+
+        function success(res){
+            msgModal(
+                'Success',
+                'Thanks for logging in',
+                false
+            ).result.then(function(){});
+        }
+
+        sendLogin(user,pw,success,success)
             .then(function(res){
                 console.log(res);
                 res && login(res.data && (res.data.token || res.data)  || res);

@@ -8,7 +8,7 @@ function appRouteConfig($routeProvider,$locationProvider){
     $locationProvider.html5Mode(true);
 
     $routeProvider.when('/',{
-        templateUrl:'static/partials/home.html',
+        templateUrl:'/static/partials/home.html',
         controller:'HomeCtrl',
         controllerAs:'ctrl',
         navOptions:{
@@ -18,7 +18,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         }
     })
     .when('/post/add',{
-        templateUrl:'static/partials/add.html',
+        templateUrl:'/static/partials/add.html',
         controller:'AddPostCtrl',
         controllerAs:'ctrl',
         resolve:{
@@ -35,7 +35,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         }
     })
     .when('/posts',{
-        templateUrl:'static/partials/posts.html',
+        templateUrl:'/static/partials/posts.html',
         controller:'PostsCtrl',
         controllerAs:'ctrl',
         resolve:{
@@ -59,7 +59,7 @@ function appRouteConfig($routeProvider,$locationProvider){
         }
     })
     .when('/post/:post_id',{
-        templateUrl:'static/partials/post.html',
+        templateUrl:'/static/partials/post.html',
         controller:'PostCtrl',
         controllerAs:'ctrl',
         resolve:{
@@ -120,12 +120,15 @@ function appRouteConfig($routeProvider,$locationProvider){
     })
     .when('/admin/:page',{
         templateUrl:function(params){
-            return '/static/partials/admin-'+params.page+'.html';
-        }
+            return '/static/partials/admin/'+params.page+'.html';
+        },
+        controller:"AdminCtrl",
+        requiresAuth:true
     })
     .when('/admin',{
         templateUrl:"/static/partials/admin/dash.html",
-        controller:"AdminCtrl"
+        controller:"AdminCtrl",
+        requiresAuth:true
     })
     .otherwise({
         redirectTo:'/'

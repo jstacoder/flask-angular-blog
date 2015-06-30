@@ -68,17 +68,18 @@ function emailFilter() {
 sendLogin.$inject = ['$http','API_LOGIN_URL','$q','redirect'];
 function sendLogin($http,API_LOGIN_URL,$q,redirect) {
     var d = $q.defer();
-    return function(email,pw){
+    return function(email,pw,success,error){
         if (email && pw) {
             console.log('sendding post');
             $http.post(API_LOGIN_URL,{email:email,password:pw}).then(function(res){
                     console.log('sent good post',res.data);
                     d.resolve(res);
-                    redirect('/');
+                    return success(res);
                },function(err){
                     console.log('sent bad post');
-                    return d.reject(err);
-            });
+                    d.reject(err);
+                    return error(err);
+               });
         }else{
             console.log('didnt send post');
             d.reject('errrrror');
