@@ -7,14 +7,23 @@ from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
 from htmlmin import minify
 
-front  = get_app('front',is_bp=True,static_folder='static',template_folder='templates',root_path=os.path.realpath(os.path.dirname(__file__)),url_prefix='')
+front  = get_app(
+            'front',
+            is_bp = True,
+            static_folder = 'static',
+            template_folder = 'templates',
+            root_path = os.path.realpath(
+                                os.path.dirname(
+                                    __file__
+                                )
+            ),
+            url_prefix = ''
+)
 
-check_cache = front.before_request(check_cache)
-cache_response = front.after_request(cache_response)
+#check_cache = front.before_request(check_cache)
+#cache_response = front.after_request(cache_response)
 
 class IndexView(views.MethodView):
-
-
     def get(self,post_id=None,extra=None):
         rtn = send_file(
                     op.realpath(
@@ -106,6 +115,11 @@ front.add_url_rule(
     '/admin',
     'admin',
     view_func = IndexView.as_view('admin')
+)
+front.add_url_rule(
+    '/admin/<path:extra>',
+    'admin_page',
+    view_func = IndexView.as_view('admin_page')
 )
 if __name__ == "__main__":
     front.run('0.0.0.0',8000,debug=True)

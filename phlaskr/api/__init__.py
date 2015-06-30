@@ -6,8 +6,8 @@ from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,c
 
 api = get_app('api',is_bp=True,static_folder='static',url_prefix='/api/v1')
 
-check_cache = api.before_request(check_cache)
-cache_response = api.after_request(cache_response)
+#check_cache = api.before_request(check_cache)
+#cache_response = api.after_request(cache_response)
 
 
 def get_data():
