@@ -111,6 +111,28 @@ class BaseModel(get_base()):
         return self in self.session.deleted and\
             self.session.commit()
 
+class Page(BaseModel):
+    
+    name = sa.Column(sa.String(255),unique=True)
+    post_id = sa.Column(sa.Integer,sa.ForeignKey('posts.id'))
+    _content = sa.Column(sa.Text)
+    post = sa.orm.relation('Post',uselist=False)
+    
+    
+    def __init__(self,*args,**kwargs):
+        if not 'content' in kwargs and not 'post_id' in kwargs:
+            raise ValueError('need either content or post')
+        if 'content' in kwargs:
+            self._content = kwargs.pop('content')
+        super(Page,self).__init__(*args,**kwargs)        
+    
+    @property
+    def content(self):
+        if self._content is None:
+            return self.post.content
+        return self._content
+
+
 class Post(BaseModel):
     _env = None
     _context = {}

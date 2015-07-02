@@ -20,14 +20,16 @@ class LocalConfig(object):
     SECRET_KEY = 'somesecret'
     DATABASE_URI = 'sqlite:///test.db
 ```
+Dont forget the database part
 
 then run 
 ```bash
 python phlaskr/seed_db.py
 ```
+You setup you `DATABASE_URI` earlier right?
 
-then, (as long as you installed everything inside of a virtualenv) 
-to run it just:
+ok... then, (as long as you installed everything inside of a virtualenv (lets hope so) ) 
+to get things started you just need to run:
 
 ```bash
 honcho start
