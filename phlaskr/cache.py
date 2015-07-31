@@ -50,7 +50,7 @@ def cache_response(res):
 def check_cache():
     if  request.method == 'GET':
         print 'unsetting cached'
-        :g.cached = False
+        g.cached = False
         print 'checking cache'
         key = _key(new('md5',request.path).hexdigest())
         result = cache.get(key)
