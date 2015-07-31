@@ -27,7 +27,7 @@ def convert_uri_to_args(uri):
 cache = Redis(
     **convert_uri_to_args(
                 os.environ.get('HEROKU')\
-                and 'redis://rediscloud:hQUeCl0o4Az3pLS2@pub-redis-17658.us-east-1-3.4.ec2.garantiadata.com:17658'
+                and os.environ.get('REDIS_URL') #'redis://rediscloud:hQUeCl0o4Az3pLS2@pub-redis-17658.us-east-1-3.4.ec2.garantiadata.com:17658'
     ) or {}
 )
 
@@ -50,7 +50,7 @@ def cache_response(res):
 def check_cache():
     if  request.method == 'GET':
         print 'unsetting cached'
-        g.cached = False
+        :g.cached = False
         print 'checking cache'
         key = _key(new('md5',request.path).hexdigest())
         result = cache.get(key)
