@@ -14,7 +14,8 @@ app.service('postService',postService)
    .constant('API_PREFIX','/api/v1')
    .factory('getUserPosts',getUserPosts)
    .factory('resourceService',resourceService)
-   .factory('msgModal',msgModal);
+   .factory('msgModal',msgModal)
+   .factory('recentPosts',recentPosts);
 
    //.factory('deleteModal',deleteModal);
    //
@@ -223,10 +224,24 @@ function postService($resource) {
     );
 }
 
-posts.$inject = ['postService'];
+posts.$inject = ['postService','$q'];
 
-function posts(postService) {
-    return postService.query();
+function posts(postService,$q) {
+    var self = this;
+    
+    self.posts = $q.when(self.posts) || postService.query();
+    return self.posts;
+}
+
+recentPosts.$inject = ['postService','$q'];
+function recentPosts(postService,$q){
+    var rtn = [];
+    return $q.when(postService.query()).then(function(res){
+        for(var i = 0;i < 3; i++){
+            rtn.push(res[i]);
+        }
+        return rtn;
+    });
 }
 
 addPost.$inject = ['posts'];

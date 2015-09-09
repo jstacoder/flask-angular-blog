@@ -1,7 +1,7 @@
 import os
 from os import path as op
-from flask import Flask,render_template,views,g,request,send_file,g,current_app
-from ..models import AppUser
+from flask import Flask,render_template,views,g,request,send_file,current_app,session
+from ..models import AppUser,Post
 from ..app_factory import get_app
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from ..cache import set_cache,get_cache,make_secret_key,get_key,cache_response,check_cache
@@ -22,6 +22,10 @@ front  = get_app(
 
 #check_cache = front.before_request(check_cache)
 #cache_response = front.after_request(cache_response)
+
+@front.before_app_first_request
+def get_posts():
+    g.posts = map(lambda x: x.to_json(), Post.get_all())
 
 class IndexView(views.MethodView):
     def get(self,post_id=None,extra=None):

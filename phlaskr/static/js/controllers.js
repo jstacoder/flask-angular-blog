@@ -334,6 +334,10 @@ function PostCtrl(post,deletePost,$location,$window,isAuthenticated,$modal,$scop
         deletePost(post,'/posts');
     };
 
+    function clearComment(){
+        self.comment.content = '';
+        self.comment.subject = '';
+    }
     function prePend(lst,itm){
         var newlst = [itm];
         lst.map(function(i){
@@ -390,6 +394,7 @@ function PostCtrl(post,deletePost,$location,$window,isAuthenticated,$modal,$scop
                 )
         .then(function(res){
             insertComment(res.data);
+            clearComment();
         });
     }
     self.addComment = function(post_id,cmt_id){

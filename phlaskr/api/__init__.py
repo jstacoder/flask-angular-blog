@@ -1,4 +1,4 @@
-from flask import Flask,views,jsonify,request,make_response,json,g,redirect,abort,g,current_app
+from flask import Flask,views,jsonify,request,make_response,json,redirect,abort,g,current_app
 from ..models import Comment,Post,Tag,Email,AppUser as User,PublicUser
 from itsdangerous import TimedJSONWebSignatureSerializer as signer
 from ..app_factory import get_app
@@ -9,6 +9,9 @@ api = get_app('api',is_bp=True,static_folder='static',url_prefix='/api/v1')
 #check_cache = api.before_request(check_cache)
 #cache_response = api.after_request(cache_response)
 
+
+def add_posts():
+    g.posts = map(lambda x: x.to_json(),Post.get_all())
 
 def get_data():
     print 'here'
@@ -76,7 +79,9 @@ class PostListView(views.MethodView):
 class PostView(views.MethodView):
     def get(self,post_id=None):
         if post_id is None:
-            return json_response(map(lambda x: x.to_json(),Post.get_all()))
+            if not 'posts' in g:
+                add_posts()
+            return json_response(g.posts)
         return jsonify(Post.get_by_id(post_id).to_json())
 
     def post(self,post_id=None):
