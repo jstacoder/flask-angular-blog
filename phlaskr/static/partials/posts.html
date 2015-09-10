@@ -12,7 +12,7 @@
         ng-href="/post/{{ post.id }}"
     >{{ post.title }}</a>
     </h3>
-    <h5>
+    <h5 class="post-content">
         Added: {{ post.date_added | date:shortDate:'+0830' }}<br />
         By: {{ post.author }}<br />
         <small>Comments: {{ post.comments.length }}</small>
@@ -34,9 +34,21 @@
                         &&
                     ctrl.current.id==post.author_id"
         >Delete</button>
-    <hr class=short />
+    <hr />
 </div>
 </div>
 <div class=col-md-3>
 <div ng-include='"static/partials/post-buttons.html"'></div>
 </div>
+
+<script>
+    function getPosts(){
+      var l = document.querySelectorAll('.post-content').length;   
+      return l && l > 0 || false;
+    }
+    while(!getPosts()){
+        setTimeout(function(){
+            console.log('hiya!!!');
+        },2500);
+    }
+</script>

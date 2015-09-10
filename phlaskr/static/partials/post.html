@@ -37,7 +37,6 @@
                             </div>
                             <div class="col-md-2 col-md-pull-1">
                                  <p class=form-control-static ng-bind="ctrl.currentUser.username"></p>
-                                <!--<input placeholder="Name" type="text" name=name ng-model=ctrl.comment.author class=form-control />-->
                              </div>
                             <input type="hidden" value="ctrl.post.id" name="post_id" ng-model="ctrl.post.id" />
                              <div class="col-md-push-1 col-md-10">
@@ -50,7 +49,7 @@
                 <div class="panel-footer">
                     <div class=row>
                         <div class="col-md-offset-10">
-                            <button class="btn  btn-xs btn-default" ng-click="ctrl.addPostComment()">submit</button>
+                            <button class="btn  btn-xs btn-default" ng-disabled="!ctrl.currentUser" ng-click="ctrl.addPostComment()">submit</button>
                         </div>
                     </div>
                 </div>
