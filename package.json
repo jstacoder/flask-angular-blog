@@ -1,7 +1,5 @@
 {
      "dependencies": {
             "bower": "latest"
-             },
-    "engines":"io.js",
-    "npm":"2.11.1"
+             }
 }
