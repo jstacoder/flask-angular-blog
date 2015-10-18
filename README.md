@@ -2,6 +2,7 @@
 
 a fun little blog with a Flask backend and AngularJs frontend.
 try out the [demo app](https://phlaskr.herokuapp.com) on heroku
+or create your own with the one click deploy button [here](https://github.com/jstacoder/flask-angular-blog-example)
 
 ####TravisCI Build Status
 ---
